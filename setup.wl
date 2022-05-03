@@ -36,7 +36,7 @@ $ExtrinsicKSign = -1;
 $AccelerationSign = -1;
 
 (**************************)
-(* initialize global vars *)
+(* Initialize global vars *)
 (**************************)
 map$cpnt2varlist$global = {};
 new$varlist$global = True;
