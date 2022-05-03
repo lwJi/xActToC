@@ -1,7 +1,8 @@
 (* ::Package:: *)
 
-(* setup.wl
-    (c) Liwei Ji, 08/2021 *)
+(* Setup.wl
+   (c) Liwei Ji, 08/2021 *)
+
 
 (*************)
 (* Load xAct *)
