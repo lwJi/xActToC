@@ -40,7 +40,7 @@ Opening ".wl" files with Mathematica is recommended. Because you can benefit fro
 | Evolution   | Evol         |
 | Expression  | Expr         |
 | Tensor      | Tsr          |
-| Unprotected | Unprot       |
+| Unprotected | Upt          |
 
 
 ## Name Conventions

@@ -9,9 +9,11 @@
 
 << Setup.wl
 
+<< MiscFunctions.wl
+
 << SetManifoldAndChart.wl
 
-<< ManipulateComponents.wl
+<< ManipulateVarlist.wl
 
 (*
 << misctools.wl

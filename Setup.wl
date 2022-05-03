@@ -39,5 +39,12 @@ $AccelerationSign = -1;
 (**************************)
 (* Initialize global vars *)
 (**************************)
+(* store map between components and varlist indexes *)
 $Map$ComponentToVarlist = {};
+
+(* flag if creat new varlist *)
 $Bool$NewVarlist = True;
+
+(* suffix to be added to vars, which would conflict with system default vars otherwise *)
+$Suffix$Unprotected = "$Upt";
+
