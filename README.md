@@ -49,11 +49,9 @@ Opening ".wl" files with Mathematica is recommended. Because you can benefit fro
 
 * make naming depend on symbol names
 
-    * use verbs for symbols used as functions, nouns for symbols used as variables
+    * use verbs for symbols used as functions, nouns for symbols used as variables,
 
-    * use of singular vs. plural for lists (`number[[idx]]` vs `numbers[[idx]]`), or other conventions as `numberArray[[x]]`
-
-    * conventions for e.g. variables used as loop counters, flags, ...
+    * use `numberArray[[x]]` for lists,
 
     * use of mathematica like `xxxQ` functions vs. `isXxx` as used in many other languages.
 
@@ -62,3 +60,5 @@ Opening ".wl" files with Mathematica is recommended. Because you can benefit fro
     * all uppercase names for constant
 
     * all single letter symbol names or not (no)
+
+    * checkout https://mathematica.stackexchange.com/questions/72669/mathematica-style-guide
