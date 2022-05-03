@@ -6,9 +6,9 @@
 (* Mathematica script:
     Given equations in tensor notation, write correspoding C code. *)
 
-(*
-<< setup.wl
+<< Setup.wl
 
+(*
 << misctools.wl
 
 << definetensor.wl

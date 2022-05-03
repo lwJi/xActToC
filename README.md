@@ -35,12 +35,12 @@ Opening ".wl" files with Mathematica is recommended. Because you can benefit fro
 
 | Original    | Abbreviation |
 | ----------- | ------------ |
-| Component   | CPNT         |
-| Index       | IDX          |
-| Evolution   | EVOL         |
-| Expression  | EXPR         |
-| Tensor      | TSR          |
-| Unprotected | UNPROT       |
+| Component   | Cpnt         |
+| Index       | Idx          |
+| Evolution   | Evol         |
+| Expression  | Expr         |
+| Tensor      | Tsr          |
+| Unprotected | Unprot       |
 
 
 ## Name Conventions

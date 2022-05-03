@@ -38,5 +38,5 @@ $AccelerationSign = -1;
 (**************************)
 (* Initialize global vars *)
 (**************************)
-map$cpnt2varlist$global = {};
-new$varlist$global = True;
+$Map$ComponentToVarlist = {};
+$Bool$NewVarlist = True;
