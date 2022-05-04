@@ -8,21 +8,32 @@
 (* main function which handle different num of index cases *)
 ManipulateVarlist[mode_?StringQ, varlist_?ListQ, coordinate_, gridPointIndex_?StringQ, printVerbose_:True] := Module[
   {
-    iMin, iMax = 3,
-    var, varName,
+    iMin,
+    iMax = 3,
+    var,
+    varName,
+    varLength,
+    varWithSymmetry,
+    varSymmetryName,
+    varSymmetryIndex,
     manipulateComponentValue
   },
-  (* default parameters *)
-  $Bool$PrintVerbose = printVerbose;
-  If[$Dim==3, iMin = 1, iMin = 0];
-  (* initialize $Bool$NewVarlist *)
+  (* set global parameters *)
   $Bool$NewVarlist = True;
+  $Bool$PrintVerbose = printVerbose;
+  (* set temp parameters *)
+  If[$Dim==3, iMin = 1, iMin = 0];
 
   (* loop over varlist in the list *)
   Do[
     var = varlist[[iVar]];   (* say { metricg[-a,-b], Symmetric[{-a,-b}], "g" } *)
     varName = var[[1]];      (* say metricg[-a,-b] *)
     varLength = Length[var]; (* var length: how many descriptions for var *)
+    varWithSymmetry = (varLength==3) || (varLength==2&&(!StringQ[var[[2]]])); (* if with symmetry *)
+    If[varWithSymmetry,
+      varSymmetryName = var[[2]][[0]];
+      varSymmetryIndex = var[[2]][[1]]
+    ]
 
     (* check if tensor defined yet *)
     If[!xTensorQ[varName[[0]]], (* if tensor name exist already *)
@@ -57,10 +68,10 @@ ManipulateVarlist[mode_?StringQ, varlist_?ListQ, coordinate_, gridPointIndex_?St
       (* TWO INDEXES CASE: *)
       (* ----------------- *)
       2,
-      If[(varLength==3) || (varLength==2&&(!StringQ[var[[2]]])), (* if with symmetry *)
+      If[varWithSymmetry,
         (* With Symmetry *)
         Module[{},
-          Switch[var[[2]][[0]],
+          Switch[varSymmetryName,
             Symmetric,
             Do[manipulateComponentValue[{ia,ib}], {ia,iMin,iMax},{ib,ia,iMax}],
             Antisymmetric,
@@ -74,114 +85,79 @@ ManipulateVarlist[mode_?StringQ, varlist_?ListQ, coordinate_, gridPointIndex_?St
         Do[manipulateComponentValue[{ia,ib}], {ia,iMin,iMax},{ib,iMin,iMax}]
       ],
 
-(*
       (* ------------------ *)
       (* THREE INDEXES CASE *)
       (* ------------------ *)
       3,
-      If[(varLength==3)||
-         (varLength==2&&(!StringQ[var[[2]]])),
-        (* WITH SYMMETRY *)
-        Module[{varlist$idxsymm=var[[2]][[1]]},
+      If[varWithSymmetry,
+        (* With Symmetry *)
+        Module[{},
           Which[
             (* c(ab) or c[ab] *)
-            (varlist$idxsymm[[1]]===varName[[2]])&&
-            (varlist$idxsymm[[2]]===varName[[3]]),
-            Switch[var[[2]][[0]],
+            (varSymmetryIndex[[1]]===varName[[2]]) && (varSymmetryIndex[[2]]===varName[[3]]),
+            Switch[varSymmetryName,
               Symmetric,
-              Do[compIndexList={idx$c,ia,ib};
-                ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
-                {idx$c,iMin,iMax},{ia,iMin,iMax},
-                {ib,ia,iMax}],
+              Do[manipulateComponentValue[{ic,ia,ib}], {ic,iMin,iMax},{ia,iMin,iMax},{ib,ia,iMax}],
               Antisymmetric,
-              Do[compIndexList={idx$c,ia,ib};
-                ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
-                {idx$c,iMin,iMax},{ia,iMin,iMax},
-                {ib,ia+1,iMax}],
-              _,(* symmetry undefined *)
-              printerror[iVar,varName]
+              Do[manipulateComponentValue[{ic,ia,ib}], {ic,iMin,iMax},{ia,iMin,iMax},{ib,ia+1,iMax}],
+              _,
+              Message[ManipulateVarlist::ErrorSymmetryType, iVar, varName, varlist]; Abort[]
             ],
             (* (ab)c or [ab]c *)
-            (varlist$idxsymm[[1]]===varName[[1]])&&
-            (varlist$idxsymm[[2]]===varName[[2]]),
-            Switch[var[[2]][[0]],
+            (varSymmetryIndex[[1]]===varName[[1]]) && (varSymmetryIndex[[2]]===varName[[2]]),
+            Switch[varSymmetryName,
               Symmetric,
-              Do[compIndexList={ia,ib,idx$c};
-                ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
-                {ia,iMin,iMax},{ib,ia,iMax},
-                {idx$c,iMin,iMax}],
+              Do[manipulateComponentValue[{ia,ib,ic}], {ia,iMin,iMax},{ib,ia,iMax},{ic,iMin,iMax}],
               Antisymmetric,
-              Do[compIndexList={ia,ib,idx$c};
-                ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
-                {ia,iMin,iMax},{ib,ia+1,iMax},
-                {idx$c,iMin,iMax}],
-              _,(* symmetry undefined *)
-              printerror[iVar,varName]
+              Do[manipulateComponentValue[{ia,ib,ic}], {ia,iMin,iMax},{ib,ia+1,iMax},{ic,iMin,iMax}],
+              _,
+              Message[ManipulateVarlist::ErrorSymmetryType, iVar, varName, varlist]; Abort[]
             ],
             (* other three indexes cases *)
             True,
-            printerror[iVar,varName]
+            Message[ManipulateVarlist::ErrorSymmetryType, iVar, varName, varlist]; Abort[]
           ];
           varName//ToBasis[coordinate]//ComponentArray//ComponentValue
         ],
-        (* WITHOUT SYMMETRY *)
-        Do[compIndexList={idx$c,ia,ib};
-          ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
-          {idx$c,iMin,iMax},{ia,iMin,iMax},
-          {ib,iMin,iMax}]
+        (* Without Symmetry *)
+        Do[manipulateComponentValue[{ic,ia,ib}], {ic,iMin,iMax},{ia,iMin,iMax},{ib,iMin,iMax}]
       ],
 
       (* ----------------- *)
       (* FOUR INDEXES CASE *)
       (* ----------------- *)
       4,
-      If[(varLength==3)||
-         (varLength==2&&(!StringQ[var[[2]]])),
-        (* WITH SYMMETRY *)
-        Module[{varlist$idxsymm=var[[2]][[1]]},
+      If[varWithSymmetry,
+        (* With Symmetry *)
+        Module[{},
           Which[
             (* cd(ab) or cd[ab] *)
-            (varlist$idxsymm[[1]]===varName[[3]])&&
-            (varlist$idxsymm[[2]]===varName[[4]]),
-            Switch[var[[2]][[0]],
+            (varSymmetryIndex[[1]]===varName[[3]]) && (varSymmetryIndex[[2]]===varName[[4]]),
+            Switch[varSymmetryName,
               Symmetric,
-              Do[compIndexList={idx$c,idx$d,ia,ib};
-                ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
-                {idx$c,iMin,iMax},{idx$d,iMin,iMax},
-                {ia,iMin,iMax},{ib,ia,iMax}],
+              Do[manipulateComponentValue[{ic,id,ia,ib}], {ic,iMin,iMax},{id,iMin,iMax},{ia,iMin,iMax},{ib,ia,iMax}],
               Antisymmetric,
-              Do[compIndexList={idx$c,idx$d,ia,ib};
-                ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
-                {idx$c,iMin,iMax},{idx$d,iMin,iMax},
-                {ia,iMin,iMax},{ib,ia+1,iMax}],
-              _,(* symmetry undefined *)
-              printerror[iVar,varName]
+              Do[manipulateComponentValue[{ic,id,ia,ib}], {ic,iMin,iMax},{id,iMin,iMax},{ia,iMin,iMax},{ib,ia+1,iMax}],
+              _,
+              Message[ManipulateVarlist::ErrorSymmetryType, iVar, varName, varlist]; Abort[]
             ],
             (* (cd)(ab) or ... *)
-            var[[2]][[0]]==GenSet,
+            varSymmetryName==GenSet,
             Which[
-              (var[[2]][[1]]==Cycles[{1,2}])&&
-              (var[[2]][[2]]==Cycles[{3,4}]),
-              Do[compIndexList={idx$c,idx$d,ia,ib};
-                ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
-                {idx$c,iMin,iMax},{idx$d,idx$c,iMax},
-                {ia,iMin,iMax},{ib,ia,iMax}],
+              (var[[2]][[1]]==Cycles[{1,2}]) && (var[[2]][[2]]==Cycles[{3,4}]),
+              Do[manipulateComponentValue[{ic,id,ia,ib}], {ic,iMin,iMax},{id,ic,iMax},{ia,iMin,iMax},{ib,ia,iMax}],
               True,
-              printerror[iVar,varName]
+              Message[ManipulateVarlist::ErrorSymmetryType, iVar, varName, varlist]; Abort[]
             ],
             (* other four indexes cases *)
             True,
-            printerror[iVar,varName]
+            Message[ManipulateVarlist::ErrorSymmetryType, iVar, varName, varlist]; Abort[]
           ];
           varName//ToBasis[coordinate]//ComponentArray//ComponentValue
         ],
-        (* WITHOUT SYMMETRY *)
-        Do[compIndexList={idx$c,idx$d,ia,ib};
-          ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
-          {idx$c,iMin,iMax},{idx$d,iMin,iMax},
-          {ia,iMin,iMax},{ib,iMin,iMax}]
+        (* Without Symmetry *)
+        Do[manipulateComponentValue[{ic,id,ia,ib}], {ic,iMin,iMax},{id,iMin,iMax},{ia,iMin,iMax},{ib,iMin,iMax}]
       ],
-*)
 
       (* -------------------- *)
       (* OTHER NUM OF INDEXES *)
@@ -217,14 +193,16 @@ ManipulateComponent[compIndexList_, mode_, coordinate_, varName_, gridPointIndex
   ];
   *)
   (* set components or print components/equations *)
-  If[StringMatchQ[mode, "set components*"],
-    PrintVerbose["Set Component ", compName, " for Tensor ", varName[[0]]];
-    SetComponentAndIndexMap[mode, compName, exprName],
-    If[StringMatchQ[mode, "print components*"],
-      PrintVerbose["Print Component ", compName, " to C-file"],
-      (*PrintComponent[mode,coordinate,varName,compName,rhssName,gridPointIndex],*)
-      Message[ManipulateComponent::ErrorMode, mode]; Abort[]
-    ]
+  Which[
+    (* set componentes *)
+    StringMatchQ[mode, "set components*"],
+    SetComponentAndIndexMap[mode, compName, exprName]; PrintVerbose["Set Component ", compName, " for Tensor ", varName[[0]]],
+    (* print componentes *)
+    StringMatchQ[mode, "print components*"],
+    (*PrintComponent[mode,coordinate,varName,compName,rhssName,gridPointIndex];*) PrintVerbose["Print Component ", compName, " to C-file"],
+    (* error mode *)
+    True,
+    Message[ManipulateComponent::ErrorMode, mode]; Abort[]
   ]
 ];
 ManipulateComponent::ErrorMode = "Manipulate mode \"`1`\" undefined !";
