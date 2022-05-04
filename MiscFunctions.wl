@@ -1,7 +1,8 @@
 (* ::Package:: *)
 
 (* MiscFunctions.wl
-   (c) Liwei Ji, 08/2021 *)
+   (c) Liwei Ji, 08/2021
+*)
 
 
 (***************************)

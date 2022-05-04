@@ -1,18 +1,16 @@
 (* ::Package:: *)
 
 (* ManipulateVarlist.wl
-   (c) Liwei Ji, 08/2021 *)
-
-
-(* main function which handle different num of index cases:
-     1. set tensor components,
-     2. print tensor components or equations
+   (c) Liwei Ji, 08/2021
 *)
+
+
+(* main function which handle different num of index cases *)
 ManipulateVarlist[mode_?StringQ, varlist_, coordinate_, gridPointIndex_?StringQ] := Module[
   {
     compIndexList,
     iMin, iMax = 3,
-    varName
+    var, varName
   },
   (* default parameters *)
   If[$Dim==3, iMin = 1, iMin = 0];
@@ -21,8 +19,12 @@ ManipulateVarlist[mode_?StringQ, varlist_, coordinate_, gridPointIndex_?StringQ]
 
   (* loop over varlist in the list *)
   Do[
-    varName = varlist[[iVar, 1]]; (* say g[-a,-b] *)
-    varLength = Length[varlist[[iVar]]]; (* var length: how many descriptions for var *)
+    var = varlist[[iVar]];   (* say { metricg[-a,-b], Symmetric[{-a,-b}], "g" } *)
+    varName = var[[1]];      (* say metricg[-a,-b] *)
+    varLength = Length[var]; (* var length: how many descriptions for var *)
+
+    (* check if tensor defined yet *)
+
     (* consider different types of tensor *)
     Switch[Length[varName],
       (* ---------------- *)
@@ -41,19 +43,20 @@ ManipulateVarlist[mode_?StringQ, varlist_, coordinate_, gridPointIndex_?StringQ]
       Module[{},
         Do[
           compIndexList = {idx$a};
-          ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
+          ManipulateComponent[compIndexList, mode, coordinate, varName, gridPointIndex],
         {idx$a,iMin,iMax}]
       ],
 
+(*
       (* ----------------- *)
       (* TWO INDEXES CASE: *)
       (* ----------------- *)
       2,
       If[(varLength==3)||
-         (varLength==2&&(!StringQ[varlist[[iVar,2]]])),
+         (varLength==2&&(!StringQ[var[[2]]])),
         (* WITH SYMMETRY *)
         Module[{},
-          Switch[varlist[[iVar,2]][[0]],
+          Switch[var[[2]][[0]],
             Symmetric,
             Do[compIndexList={idx$a,idx$b};
               ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
@@ -78,14 +81,14 @@ ManipulateVarlist[mode_?StringQ, varlist_, coordinate_, gridPointIndex_?StringQ]
       (* ------------------ *)
       3,
       If[(varLength==3)||
-         (varLength==2&&(!StringQ[varlist[[iVar,2]]])),
+         (varLength==2&&(!StringQ[var[[2]]])),
         (* WITH SYMMETRY *)
-        Module[{varlist$idxsymm=varlist[[iVar,2]][[1]]},
+        Module[{varlist$idxsymm=var[[2]][[1]]},
           Which[
             (* c(ab) or c[ab] *)
             (varlist$idxsymm[[1]]===varName[[2]])&&
             (varlist$idxsymm[[2]]===varName[[3]]),
-            Switch[varlist[[iVar,2]][[0]],
+            Switch[var[[2]][[0]],
               Symmetric,
               Do[compIndexList={idx$c,idx$a,idx$b};
                 ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
@@ -102,7 +105,7 @@ ManipulateVarlist[mode_?StringQ, varlist_, coordinate_, gridPointIndex_?StringQ]
             (* (ab)c or [ab]c *)
             (varlist$idxsymm[[1]]===varName[[1]])&&
             (varlist$idxsymm[[2]]===varName[[2]]),
-            Switch[varlist[[iVar,2]][[0]],
+            Switch[var[[2]][[0]],
               Symmetric,
               Do[compIndexList={idx$a,idx$b,idx$c};
                 ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
@@ -134,14 +137,14 @@ ManipulateVarlist[mode_?StringQ, varlist_, coordinate_, gridPointIndex_?StringQ]
       (* ----------------- *)
       4,
       If[(varLength==3)||
-         (varLength==2&&(!StringQ[varlist[[iVar,2]]])),
+         (varLength==2&&(!StringQ[var[[2]]])),
         (* WITH SYMMETRY *)
-        Module[{varlist$idxsymm=varlist[[iVar,2]][[1]]},
+        Module[{varlist$idxsymm=var[[2]][[1]]},
           Which[
             (* cd(ab) or cd[ab] *)
             (varlist$idxsymm[[1]]===varName[[3]])&&
             (varlist$idxsymm[[2]]===varName[[4]]),
-            Switch[varlist[[iVar,2]][[0]],
+            Switch[var[[2]][[0]],
               Symmetric,
               Do[compIndexList={idx$c,idx$d,idx$a,idx$b};
                 ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
@@ -156,10 +159,10 @@ ManipulateVarlist[mode_?StringQ, varlist_, coordinate_, gridPointIndex_?StringQ]
               printerror[iVar,varName]
             ],
             (* (cd)(ab) or ... *)
-            varlist[[iVar,2]][[0]]==GenSet,
+            var[[2]][[0]]==GenSet,
             Which[
-              (varlist[[iVar,2]][[1]]==Cycles[{1,2}])&&
-              (varlist[[iVar,2]][[2]]==Cycles[{3,4}]),
+              (var[[2]][[1]]==Cycles[{1,2}])&&
+              (var[[2]][[2]]==Cycles[{3,4}]),
               Do[compIndexList={idx$c,idx$d,idx$a,idx$b};
                 ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
                 {idx$c,iMin,iMax},{idx$d,idx$c,iMax},
@@ -179,18 +182,22 @@ ManipulateVarlist[mode_?StringQ, varlist_, coordinate_, gridPointIndex_?StringQ]
           {idx$c,iMin,iMax},{idx$d,iMin,iMax},
           {idx$a,iMin,iMax},{idx$b,iMin,iMax}]
       ],
+*)
 
       (* -------------------- *)
       (* OTHER NUM OF INDEXES *)
       (* -------------------- *)
       _,
-      Message[ManipulateVarlist::ErrorTensorType, ivar, varlist, varName]; Abort[]
+      Message[ManipulateVarlist::ErrorTensorType, ivar, varName, varlist]; Abort[]
     ], (* end of Switch*)
   {iVar, 1, Length[varlist]}] (* end of Do *)
 ];
 ManipulateVarlist::ErrorTensorType = "Tensor type of the `1`-th var (`2`) in varlist `3` unsupported yet !";
 
-(* Maniputlate each component of a tensor *)
+(* Maniputlate each component of a tensor:
+     1. set tensor components,
+     2. print tensor components or equations
+*)
 ManipulateComponent[compIndexList_, mode_, coordinate_, varName_, gridPointIndex_] := Module[
   {
     compName, (* component expr in Mathematica kernal *)
@@ -217,7 +224,26 @@ ManipulateComponent[compIndexList_, mode_, coordinate_, varName_, gridPointIndex
     ]
   ]
 ];
-ManipulateComponent::ErrorMode = "Manipulate mode \"`1`\" undefined!";
+ManipulateComponent::ErrorMode = "Manipulate mode \"`1`\" undefined !";
+
+(* define tensors *)
+DefineTensor[var_] := Module[{varName},
+  varName = var[[1]];
+  Switch[Length[var], (* var length: how many descriptions for var *)
+    3,
+    DefTensor[varName, $Manifd, var[[2]], PrintAs->var[[3]]],
+    2,
+    If[StringQ[var[[2]]],
+      DefTensor[varName, $Manifd, PrintAs->var[[2]]],
+      DefTensor[varName, $Manifd, var[[2]]]
+    ],
+    1,
+    DefTensor[varName, $Manifd],
+    _,
+    Message[DefineTensor::ErrorTensorType, varName]; Abort[]
+  ],
+];
+DefineTensor::ErrorTensorType = "Tensor type of `1` unsupported yet !";
 
 (* different modes of set components, also set global map of varlist:
      1. mode 'set components with vlu order': using order in varlist,

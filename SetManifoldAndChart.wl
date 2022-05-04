@@ -1,7 +1,8 @@
 (* ::Package:: *)
 
 (* SetManifoldAndChart.wl
-   (c) Liwei Ji, 08/2021 *)
+   (c) Liwei Ji, 08/2021
+*)
 
 
 (* Set Mainfold and Chart *)
@@ -9,14 +10,15 @@ SetManifoldAndChart[manifold_, dimension_, coordinateName_, coordinateArray_, te
   {},
   (* set global var *)
   $Dim = dimension;
+  $Manifd = mainfold;
   (* consider different dimension cases *)
   Switch[$Dim,
     3,
-    DefManifold[manifold,$Dim,tensorIndexRange];
-    DefChart[coordinateName,manifold,{1,2,3},coordinateArray,ChartColor->RGBColor[0,1,0]],
+    DefManifold[$Manifd,$Dim,tensorIndexRange];
+    DefChart[coordinateName,$Manifd,{1,2,3},coordinateArray,ChartColor->RGBColor[0,1,0]],
     4,
-    DefManifold[manifold,$Dim,tensorIndexRange];
-    DefChart[coordinateName,manifold,{0,1,2,3},coordinateArray,ChartColor->RGBColor[0,0,1]],
+    DefManifold[$Manifd,$Dim,tensorIndexRange];
+    DefChart[coordinateName,$Manifd,{0,1,2,3},coordinateArray,ChartColor->RGBColor[0,0,1]],
     _,
     Message[SetManifoldAndChart::ErrorDim, $Dim]; Abort[]
   ]

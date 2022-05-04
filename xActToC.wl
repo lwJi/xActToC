@@ -1,11 +1,13 @@
 (* ::Package:: *)
 
 (* xActToC.wl
-   (c) Liwei Ji, 08/2021 *)
+   (c) Liwei Ji, 08/2021
+*)
 
 
 (* Mathematica script:
-   Given equations in tensor notation, write correspoding C code. *)
+   Given equations in tensor notation, write correspoding C code.
+*)
 
 << Setup.wl
 

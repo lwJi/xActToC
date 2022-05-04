@@ -1,7 +1,8 @@
 (* ::Package:: *)
 
 (* Setup.wl
-   (c) Liwei Ji, 08/2021 *)
+   (c) Liwei Ji, 08/2021
+*)
 
 
 (*************)
@@ -39,8 +40,9 @@ $AccelerationSign = -1;
 (**************************)
 (* Initialize global vars *)
 (**************************)
-(* dimension *)
+(* dimension, manifold *)
 $Dim = 0;
+$Manifd = Null;
 
 (* store map between components and varlist indexes *)
 $Map$ComponentToVarlist = {};
