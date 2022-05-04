@@ -39,6 +39,9 @@ $AccelerationSign = -1;
 (**************************)
 (* Initialize global vars *)
 (**************************)
+(* dimension *)
+$Dim = 0;
+
 (* store map between components and varlist indexes *)
 $Map$ComponentToVarlist = {};
 

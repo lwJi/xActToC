@@ -6,24 +6,24 @@
 
 (* main function which handle different num of index cases:
      1. set tensor components,
-     2. print tensor components or equations *)
-ManipulateVarlist[mode_?StringQ, varlist_, coordinate_, dimension_?IntegerQ, gridPointIndex_?StringQ] := Module[
+     2. print tensor components or equations
+*)
+ManipulateVarlist[mode_?StringQ, varlist_, coordinate_, gridPointIndex_?StringQ] := Module[
   {
     compIndexList,
-    iMin, iMax,
+    iMin, iMax = 3,
     varName
   },
-
-  Print["Hello World!"];
-  (*
   (* default parameters *)
-  iMax=3;
-  If[dimension==3,iMin=1,iMin=0];
+  If[$Dim==3, iMin = 1, iMin = 0];
   (* initialize $Bool$NewVarlist *)
-  $Bool$NewVarlist=True;
+  $Bool$NewVarlist = True;
 
   (* loop over varlist in the list *)
-  Do[varName=varlist[[iVar,1]];
+  Do[
+    varName = varlist[[iVar, 1]]; (* say g[-a,-b] *)
+    varLength = Length[varlist[[iVar]]]; (* var length: how many descriptions for var *)
+    (* consider different types of tensor *)
     Switch[Length[varName],
       (* ---------------- *)
       (* ZERO INDEX CASE: *)
@@ -31,7 +31,7 @@ ManipulateVarlist[mode_?StringQ, varlist_, coordinate_, dimension_?IntegerQ, gri
       0,
       Module[{},
         compIndexList = {};
-        manipulate[compIndexList,mode,coordinate,varName,gridPointIndex]
+        ManipulateComponent[compIndexList, mode, coordinate, varName, gridPointIndex]
       ],
 
       (* --------------- *)
@@ -39,27 +39,28 @@ ManipulateVarlist[mode_?StringQ, varlist_, coordinate_, dimension_?IntegerQ, gri
       (* --------------- *)
       1,
       Module[{},
-        Do[compIndexList = {idx$a};
-          manipulate[compIndexList,mode,coordinate,varName,gridPointIndex],
-          {idx$a,iMin,iMax}]
+        Do[
+          compIndexList = {idx$a};
+          ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
+        {idx$a,iMin,iMax}]
       ],
 
       (* ----------------- *)
       (* TWO INDEXES CASE: *)
       (* ----------------- *)
       2,
-      If[(Length[varlist[[iVar]]]==3)||
-         (Length[varlist[[iVar]]]==2&&(!StringQ[varlist[[iVar,2]]])),
+      If[(varLength==3)||
+         (varLength==2&&(!StringQ[varlist[[iVar,2]]])),
         (* WITH SYMMETRY *)
         Module[{},
           Switch[varlist[[iVar,2]][[0]],
             Symmetric,
             Do[compIndexList={idx$a,idx$b};
-              manipulate[compIndexList,mode,coordinate,varName,gridPointIndex],
+              ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
               {idx$a,iMin,iMax},{idx$b,idx$a,iMax}],
             Antisymmetric,
             Do[compIndexList={idx$a,idx$b};
-              manipulate[compIndexList,mode,coordinate,varName,gridPointIndex],
+              ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
               {idx$a,iMin,iMax},{idx$b,idx$a+1,iMax}],
             _,(* symmetry undefined *)
             printerror[iVar,varName]
@@ -68,7 +69,7 @@ ManipulateVarlist[mode_?StringQ, varlist_, coordinate_, dimension_?IntegerQ, gri
         ],
         (* WITHOUT SYMMETRY *)
         Do[compIndexList={idx$a,idx$b};
-          manipulate[compIndexList,mode,coordinate,varName,gridPointIndex],
+          ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
           {idx$a,iMin,iMax},{idx$b,iMin,iMax}]
       ],
 
@@ -76,8 +77,8 @@ ManipulateVarlist[mode_?StringQ, varlist_, coordinate_, dimension_?IntegerQ, gri
       (* THREE INDEXES CASE *)
       (* ------------------ *)
       3,
-      If[(Length[varlist[[iVar]]]==3)||
-         (Length[varlist[[iVar]]]==2&&(!StringQ[varlist[[iVar,2]]])),
+      If[(varLength==3)||
+         (varLength==2&&(!StringQ[varlist[[iVar,2]]])),
         (* WITH SYMMETRY *)
         Module[{varlist$idxsymm=varlist[[iVar,2]][[1]]},
           Which[
@@ -87,12 +88,12 @@ ManipulateVarlist[mode_?StringQ, varlist_, coordinate_, dimension_?IntegerQ, gri
             Switch[varlist[[iVar,2]][[0]],
               Symmetric,
               Do[compIndexList={idx$c,idx$a,idx$b};
-                manipulate[compIndexList,mode,coordinate,varName,gridPointIndex],
+                ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
                 {idx$c,iMin,iMax},{idx$a,iMin,iMax},
                 {idx$b,idx$a,iMax}],
               Antisymmetric,
               Do[compIndexList={idx$c,idx$a,idx$b};
-                manipulate[compIndexList,mode,coordinate,varName,gridPointIndex],
+                ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
                 {idx$c,iMin,iMax},{idx$a,iMin,iMax},
                 {idx$b,idx$a+1,iMax}],
               _,(* symmetry undefined *)
@@ -104,12 +105,12 @@ ManipulateVarlist[mode_?StringQ, varlist_, coordinate_, dimension_?IntegerQ, gri
             Switch[varlist[[iVar,2]][[0]],
               Symmetric,
               Do[compIndexList={idx$a,idx$b,idx$c};
-                manipulate[compIndexList,mode,coordinate,varName,gridPointIndex],
+                ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
                 {idx$a,iMin,iMax},{idx$b,idx$a,iMax},
                 {idx$c,iMin,iMax}],
               Antisymmetric,
               Do[compIndexList={idx$a,idx$b,idx$c};
-                manipulate[compIndexList,mode,coordinate,varName,gridPointIndex],
+                ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
                 {idx$a,iMin,iMax},{idx$b,idx$a+1,iMax},
                 {idx$c,iMin,iMax}],
               _,(* symmetry undefined *)
@@ -123,7 +124,7 @@ ManipulateVarlist[mode_?StringQ, varlist_, coordinate_, dimension_?IntegerQ, gri
         ],
         (* WITHOUT SYMMETRY *)
         Do[compIndexList={idx$c,idx$a,idx$b};
-          manipulate[compIndexList,mode,coordinate,varName,gridPointIndex],
+          ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
           {idx$c,iMin,iMax},{idx$a,iMin,iMax},
           {idx$b,iMin,iMax}]
       ],
@@ -132,8 +133,8 @@ ManipulateVarlist[mode_?StringQ, varlist_, coordinate_, dimension_?IntegerQ, gri
       (* FOUR INDEXES CASE *)
       (* ----------------- *)
       4,
-      If[(Length[varlist[[iVar]]]==3)||
-         (Length[varlist[[iVar]]]==2&&(!StringQ[varlist[[iVar,2]]])),
+      If[(varLength==3)||
+         (varLength==2&&(!StringQ[varlist[[iVar,2]]])),
         (* WITH SYMMETRY *)
         Module[{varlist$idxsymm=varlist[[iVar,2]][[1]]},
           Which[
@@ -143,12 +144,12 @@ ManipulateVarlist[mode_?StringQ, varlist_, coordinate_, dimension_?IntegerQ, gri
             Switch[varlist[[iVar,2]][[0]],
               Symmetric,
               Do[compIndexList={idx$c,idx$d,idx$a,idx$b};
-                manipulate[compIndexList,mode,coordinate,varName,gridPointIndex],
+                ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
                 {idx$c,iMin,iMax},{idx$d,iMin,iMax},
                 {idx$a,iMin,iMax},{idx$b,idx$a,iMax}],
               Antisymmetric,
               Do[compIndexList={idx$c,idx$d,idx$a,idx$b};
-                manipulate[compIndexList,mode,coordinate,varName,gridPointIndex],
+                ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
                 {idx$c,iMin,iMax},{idx$d,iMin,iMax},
                 {idx$a,iMin,iMax},{idx$b,idx$a+1,iMax}],
               _,(* symmetry undefined *)
@@ -160,7 +161,7 @@ ManipulateVarlist[mode_?StringQ, varlist_, coordinate_, dimension_?IntegerQ, gri
               (varlist[[iVar,2]][[1]]==Cycles[{1,2}])&&
               (varlist[[iVar,2]][[2]]==Cycles[{3,4}]),
               Do[compIndexList={idx$c,idx$d,idx$a,idx$b};
-                manipulate[compIndexList,mode,coordinate,varName,gridPointIndex],
+                ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
                 {idx$c,iMin,iMax},{idx$d,idx$c,iMax},
                 {idx$a,iMin,iMax},{idx$b,idx$a,iMax}],
               True,
@@ -174,7 +175,7 @@ ManipulateVarlist[mode_?StringQ, varlist_, coordinate_, dimension_?IntegerQ, gri
         ],
         (* WITHOUT SYMMETRY *)
         Do[compIndexList={idx$c,idx$d,idx$a,idx$b};
-          manipulate[compIndexList,mode,coordinate,varName,gridPointIndex],
+          ManipulateComponent[compIndexList,mode,coordinate,varName,gridPointIndex],
           {idx$c,iMin,iMax},{idx$d,iMin,iMax},
           {idx$a,iMin,iMax},{idx$b,iMin,iMax}]
       ],
@@ -183,12 +184,11 @@ ManipulateVarlist[mode_?StringQ, varlist_, coordinate_, dimension_?IntegerQ, gri
       (* OTHER NUM OF INDEXES *)
       (* -------------------- *)
       _,
-      printerror[iVar,varName]
-    ],
-  {iVar,1,Length[varlist]}]
-  *)
+      Message[ManipulateVarlist::ErrorTensorType, ivar, varlist, varName]; Abort[]
+    ], (* end of Switch*)
+  {iVar, 1, Length[varlist]}] (* end of Do *)
 ];
-ManipulateVarlist::ErrorIndex = "Bad Index";
+ManipulateVarlist::ErrorTensorType = "Tensor type of the `1`-th var (`2`) in varlist `3` unsupported yet !";
 
 (* Maniputlate each component of a tensor *)
 ManipulateComponent[compIndexList_, mode_, coordinate_, varName_, gridPointIndex_] := Module[
@@ -221,16 +221,24 @@ ManipulateComponent::ErrorMode = "Manipulate mode \"`1`\" undefined!";
 
 (* different modes of set components, also set global map of varlist:
      1. mode 'set components with vlu order': using order in varlist,
-     2. mode 'set components with independent order': using order start with 0. *)
+     2. mode 'set components with independent order': using order start with 0.
+*)
 SetComponentAndIndexMap[mode_, compName_, exprName_] := Module[
   {
     varlistIndex
   },
-  (* set global map: $Map$ComponentToVarlist *)
+  (* set global map: $Map$ComponentToVarlist
+       case1 (start at 'new local varlist', in this case, people should pay attention when they define varlist)
+         {a00 a01 ... b00 b01 ...}, {e00 e01 ... f00 f01 ...}, ...
+           0   1  ... ... ... ...     0   1  ... ... ... ...   ...
+       case2 (start at 'new var in local varlist')
+         {a00 a01 ... b00 b01 ...}, {e00 e01 ... f00 f01 ...}, ...
+           0   1  ...  0   1  ...     0   1  ...  0   1  ...   ...
+  *)
   If[Length[$Map$ComponentToVarlist]==0 || (* global varlist is empty *)
      $Bool$NewVarlist ||                   (* new local varlist start *)
-     (StringMatchQ[mode,"set components with independent order"]&&
-      (compName[[0]]=!=Last[$Map$ComponentToVarlist][[1,0]])),
+     (StringMatchQ[mode, "set components and use independent var index"]&&
+      (compName[[0]]=!=Last[$Map$ComponentToVarlist][[1,0]])), (* new var in local varlist *)
     varlistIndex = -1,
     varlistIndex = Last[$Map$ComponentToVarlist][[2]]
   ];
@@ -245,9 +253,9 @@ SetComponentAndIndexMap[mode_, compName_, exprName_] := Module[
 SetNameArray[compIndexList_, coordinate_, varName_, gridPointIndex_] := Module[
   {
     coordFull, (* consider covariant or contravariant *)
-    compName, (* component expr in Mathematica kernal *)
-    rhssName, (* rhs component expr in Mathematica kernal *)
-    exprName  (* component expr to be printed to C code, or lhs *)
+    compName,  (* component expr in Mathematica kernal *)
+    rhssName,  (* rhs component expr in Mathematica kernal *)
+    exprName   (* component expr to be printed to C code, or lhs *)
   },
   (* initialize *)
   compName = varName[[0]][];
