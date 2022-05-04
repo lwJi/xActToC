@@ -25,3 +25,8 @@ RHSOf[var__] := Module[
 ];
 RHSOf::ErrorArgument = "`1` arguments are not supported yet !";
 
+(* print which depend on value of $Bool$PrintVerbose *)
+PrintVerbose[var__] := Module[{},
+  If[$Bool$PrintVerbose, Print[var]]
+];
+
