@@ -30,3 +30,18 @@ PrintVerbose[var__] := Module[{},
   If[$Bool$PrintVerbose, Print[var]]
 ];
 
+(* check if the current component is the 4D component of a 3D tensor (abstract index) *)
+check$4Dcpntidxin3Dtensor[compIndexList_, varName_] := Module[
+  {
+    is4Dcpntin3Dtsr
+  },
+  is4Dcpntin3Dtsr = False;
+  If[Length[compIndexList]>0,
+    Do[
+      If[check$3Dabstridx[varName[[cpntidx]]]&&(compIndexList[[cpntidx]]==0),
+        is4Dcpntin3Dtsr = True],
+    {cpntidx,1,Length[compIndexList]}]
+  ];
+  is4Dcpntin3Dtsr
+];
+

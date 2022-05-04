@@ -281,7 +281,7 @@ SetNameArray[compIndexList_, coordinate_, varName_, gridPointIndex_] := Module[
       AppendTo[rhssName, {compIndexList[[compIndex]],coordFull}];
       (* ignore the information about covariant/contravariant in 'exprName' *)
       exprName = exprName<>ToString@compIndexList[[compIndex]],
-      {compIndex, 1, Length[compIndexList]}]
+    {compIndex, 1, Length[compIndexList]}]
   ];
   exprName=ToExpression[exprName<>gridPointIndex];
   (* return NameArray *)
