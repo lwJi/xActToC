@@ -197,7 +197,7 @@ ManipulateComponent[compIndexList_, mode_, coordinate_, varName_, gridPointIndex
     SetComponentAndIndexMap[mode, compName, exprName]; PrintVerbose["Set Component ", compName, " for Tensor ", varName[[0]]],
     (* print componentes *)
     StringMatchQ[mode, "print components*"],
-    (*PrintComponent[mode,coordinate,varName,compName,rhssName,gridPointIndex];*) PrintVerbose["Print Component ", compName, " to C-file"],
+    PrintComponent[mode, coordinate, varName, compName, rhssName, gridPointIndex]; PrintVerbose["Print Component ", compName, " to C-file"],
     (* error mode *)
     True,
     Message[ManipulateComponent::ErrorMode, mode]; Abort[]
@@ -226,6 +226,33 @@ DefineTensor[var_] := Module[
   ] (* end of Switch *)
 ];
 DefineTensor::ErrorTensorType = "Tensor type of `1` unsupported yet !";
+
+(* set name of component, rhs of component and component value *)
+SetNameArray[compIndexList_, coordinate_, varName_, gridPointIndex_] := Module[
+  {
+    coordFull, (* consider covariant or contravariant *)
+    compName,  (* component expr in Mathematica kernal *)
+    rhssName,  (* rhs component expr in Mathematica kernal *)
+    exprName   (* component expr to be printed to C code, or lhs *)
+  },
+  (* initialize *)
+  compName = varName[[0]][];
+  rhssName = RHSOf[varName[[0]]][];
+  exprName = StringTrim[ToString[varName[[0]]], $Suffix$Unprotected];
+  (* if not scalar *)
+  If[Length[compIndexList]>0,
+    Do[
+      If[DownIndexQ[varName[[compIndex]]], coordFull=-coordinate, coordFull=coordinate];
+      AppendTo[compName, {compIndexList[[compIndex]],coordFull}];
+      AppendTo[rhssName, {compIndexList[[compIndex]],coordFull}];
+      (* ignore the information about covariant/contravariant in 'exprName' *)
+      exprName = exprName<>ToString@compIndexList[[compIndex]],
+    {compIndex, 1, Length[compIndexList]}]
+  ];
+  exprName=ToExpression[exprName<>gridPointIndex];
+  (* return NameArray *)
+  {compName, rhssName, exprName}
+];
 
 (* different modes of set components, also set global map of varlist:
      1. mode 'set components with vlu order': using order in varlist,
@@ -259,29 +286,66 @@ SetComponentAndIndexMap[mode_, compName_, exprName_] := Module[
   $Bool$NewVarlist = False
 ];
 
-(* set name of component, rhs of component and component value *)
-SetNameArray[compIndexList_, coordinate_, varName_, gridPointIndex_] := Module[
-  {
-    coordFull, (* consider covariant or contravariant *)
-    compName,  (* component expr in Mathematica kernal *)
-    rhssName,  (* rhs component expr in Mathematica kernal *)
-    exprName   (* component expr to be printed to C code, or lhs *)
-  },
-  (* initialize *)
-  compName = varName[[0]][];
-  rhssName = RHSOf[varName[[0]]][];
-  exprName = StringTrim[ToString[varName[[0]]], $Suffix$Unprotected];
-  (* if not scalar *)
-  If[Length[compIndexList]>0,
-    Do[
-      If[DownIndexQ[varName[[compIndex]]], coordFull=-coordinate, coordFull=coordinate];
-      AppendTo[compName, {compIndexList[[compIndex]],coordFull}];
-      AppendTo[rhssName, {compIndexList[[compIndex]],coordFull}];
-      (* ignore the information about covariant/contravariant in 'exprName' *)
-      exprName = exprName<>ToString@compIndexList[[compIndex]],
-    {compIndex, 1, Length[compIndexList]}]
-  ];
-  exprName=ToExpression[exprName<>gridPointIndex];
-  (* return NameArray *)
-  {compName, rhssName, exprName}
+PrintComponent[mode, coordinate, varName, compName, rhssName, gridPointIndex] := Module[
+  {},
+  Which[
+    (* print var initialization *)
+    StringMatchQ[mode, "print initialization*"],
+    initMode = StringTrim[mode, "print initialization"];
+    (* print var equations *)
+    PrintComponentInitialization[mode, coordinate, varName, compName, rhssName, gridPointIndex],
+    StringMatchQ[mode, "print equation*"],
+    PrintComponentEquation[mode, coordinate, varName, compName, rhssName, gridPointIndex],
+    (* mode undefined *)
+    True,
+    Message[PrintComponent::ErrorMode, mode]; Abort[]
+  ]
 ];
+PrintComponent::ErrorMode = "Print mode `1` unsupported yet !";
+
+PrintComponentEquation[mode, coordinate, varName, compName, rhssName, suffixName] := Module[
+  {
+    compToValue = compName//ToValues,
+    rhssToValue = rhssName//DummyToBasis[coordinate]//TraceBasisDummy//ToValues//Simplify
+  },
+  (* different modes *)
+  Which[
+    (* equations of temprary variables definition *)
+    StringMatchQ[mode,"print equation: temporary"],
+    Module[{},
+      pr["double "];
+      PutAppend[CForm[compToValue],file]; pr["=\n"];
+      PutAppend[CForm[rhssToValue],file]; pr[";\n\n"];
+    ],
+    (* equations of primary output variables *)
+    StringMatchQ[mode,"print equation: primary"],
+    Module[{},
+      PutAppend[CForm[compToValue],file]; pr["=\n"];
+      PutAppend[CForm[rhssToValue],file]; pr[";\n\n"];
+    ],
+    (* equations of primary output variables with suffix, say "dtPinn$fromdtK", where suffixName='fromdtK' *)
+    StringMatchQ[mode,"print equation: primary with suffix"],
+    Module[{},
+      rhssToValue = (rhssName/.{rhssName[[0]]->ToExpression[ToString[rhssName[[0]]]<>"$"<>suffixName]})//DummyToBasis[coordinate]//TraceBasisDummy//ToValues//Simplify;
+      PutAppend[CForm[compToValue],file]; pr["=\n"];
+      PutAppend[CForm[rhssToValue],file]; pr[";\n\n"];
+    ],
+    (* equations of adding more terms to primary variables, say add matter terms to dt_U *)
+    StringMatchQ[mode,"print equation: adding to primary"],
+    Module[{},
+      PutAppend[CForm[compToValue],file] ;pr["+=\n"];
+      PutAppend[CForm[rhssToValue],file] ;pr[";\n\n"]
+    ],
+    (* equations flux construction *)
+    StringMatchQ[mode,"print equation: primary for flux"],
+    Module[{},
+      pr["double "];
+      PutAppend[CForm[compToValue],file]; pr["=\n"];
+      PutAppend[CForm[rhssToValue],file]; pr[";\n\n"];
+    ],
+    (* mode undefined *)
+    True,
+    Message[PrintComponentEquation::ErrorMode, mode]; Abort[]
+  ]
+];
+PrintComponentEquation::ErrorMode = "Print equation mode `1` unsupported yet !";
