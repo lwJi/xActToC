@@ -38,6 +38,12 @@ Module[{filepointer,project},
 ];
 
 
-(* ================== *)
-(* Pre-Execution Part *)
-(* ================== *)
+(* ============== *)
+(* Write to files *)
+(* ============== *)
+Print["Writing to ", $outputFile, "\n"];
+If[FileExistQ[$outputFile], DeleteFile[$outputFile]];
+filePointer = OpenAppend[$outputFile];
+pr[x_] := Module[{}, WriteString[filePointer, x]];
+
+Close[filePointer];
