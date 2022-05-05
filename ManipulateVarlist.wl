@@ -184,14 +184,12 @@ ManipulateComponent[compIndexList_, mode_, coordinate_, varName_, gridPointIndex
   },
   (* set names *)
   {compName,rhssName,exprName} = SetNameArray[compIndexList, coordinate, varName, gridPointIndex];
-  (*
-  (* find out 4D component of a 3D tensor, which should be skipped *)
-  If[check$4Dcpntidxin3Dtensor[compIndexList,varName],
-    (* set those 'up' 0-th component to 0 for a 3D tensor *)
-    If[check$up0thcpnt[compIndexList,varName],ComponentValue[compName,0]];
+  (* find out 4D component (0-compopnent here) of a 3D tensor, which should be skipped *)
+  If[is4DCompIndexIn3DTensor[compIndexList,varName],
+    (* set those 'up' 0-component to 0 for a 3D tensor *)
+    If[isUp0thCompIndex[compIndexList,varName], ComponentValue[compName, 0]];
     Continue[]
   ];
-  *)
   (* set components or print components/equations *)
   Which[
     (* set componentes *)
