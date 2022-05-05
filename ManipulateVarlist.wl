@@ -333,8 +333,8 @@ PrintComponentEquation[mode, coordinate, varName, compName, rhssName, suffixName
     (* equations of adding more terms to primary variables, say add matter terms to dt_U *)
     StringMatchQ[mode,"print equation: adding to primary"],
     Module[{},
-      PutAppend[CForm[compToValue],file] ;pr["+=\n"];
-      PutAppend[CForm[rhssToValue],file] ;pr[";\n\n"]
+      PutAppend[CForm[compToValue],file]; pr["+=\n"];
+      PutAppend[CForm[rhssToValue],file]; pr[";\n\n"]
     ],
     (* equations flux construction *)
     StringMatchQ[mode,"print equation: primary for flux"],

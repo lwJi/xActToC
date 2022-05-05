@@ -15,15 +15,25 @@ RHSOf[var__] := Module[
   },
   (* return expression for rhs of var *)
   Switch[Length[argList],
-    1, (* var -> var$rhs *)
+    1, (* var -> var$RHS *)
     ToExpression[ToString[var]<>"$RHS"],
-    2, (* var -> var[[1]]$rhs$[[2]] *)
+    2, (* var -> var[[1]]$RHS$var[[2]], say for RHSOf[dtPinn,"fromdtK"] -> dtPinn$RHS$fromdtK *)
     ToExpression[ToString[argList[[1]]]<>"$RHS$"<>argList[[2]]],
     _,
     Message[RHSOf::ErrorArgument, Length[argList]]; Abort[]
   ]
 ];
 RHSOf::ErrorArgument = "`1` arguments are not supported yet !";
+
+(* get flux expression based on var *)
+FluxOf[flux_?StringQ, varlist_?ListQ] := Module[
+  {
+    fluxOfVarlist
+    replaceRules = Table[varlist[[iVar,1]]->ToExpression[flux<>ToString[varlist[[iVar,1]]]], {iVar,1,Length[varlist]}]
+  },
+  (* var -> fluxvar for all the varlist *)
+  fluxOfVarlist = varlist/.replaceRules
+];
 
 (* print which depend on value of $Bool$PrintVerbose *)
 PrintVerbose[var__] := Module[
