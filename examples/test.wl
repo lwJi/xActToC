@@ -5,7 +5,9 @@
 *)
 
 
-<< ../xActToC.wl
+(* << ../xActToC.wl *)
+currentDir=If[$InputFileName=="",NotebookDirectory[],DirectoryName[$InputFileName]];
+Needs["xAct`xTras`", FileNameJoin[{ParentDirectory[currentDir], "xActToC.wl"}]];
 
 (* ====================== *)
 (* Set manifold and chart *)
@@ -37,9 +39,9 @@ EvolVarlist = {
 MoreInputVarlist = {
    {MDD[-i,-j],Symmetric[{-i,-j}]}
 };
-AuxVarlist = {
+TempVarlist = {
    {vU[i]}
-}
+};
 
 (* equations *)
 IndexSet[RHSOf[vU][i_], euclid[i,k]MDD[-k,-j]uU[j]];
@@ -52,10 +54,11 @@ IndexSet[RHSOf[rU,"otherwise"][i_], vU[i]];
 (* Write to files *)
 (* ============== *)
 $outputFile = "test.c";
+$projectName = "C3GH";
 
 $headPart[] := Module[{},
   pr["#include \"nmesh.h\""];
-  pr["#include \"C3GH.h\""];
+  pr["#include \""<>$projectName<>".h\""];
   pr[];
   pr["#define Power(x,y) (pow((double) (x),(double) (y)))"];
   pr["#define Log(x) log((double) (x))"];
@@ -66,8 +69,8 @@ $headPart[] := Module[{},
   pr["#define Abs(x) fabs(x)"];
   pr[];
   pr[];
-  pr["/* use globals from C3GH */"];
-  pr["extern tC3GH C3GH[1];"];
+  pr["/* use globals from "<>$projectName<>" */"];
+  pr["extern t"<>$projectName<>" "<>$projectName<>"[1];"];
   pr[];
   pr[];
   pr["void test(tVarList *vlu, tVarList *vlr)"];
@@ -87,10 +90,45 @@ $headPart[] := Module[{},
 ];
 
 $bodyPart[] := Module[{},
-  (* print components*)
+  (* set components *)
+  Print["Setting components ..."];
+  ManipulateVarlist["set components using indepentent var index",
+                    dtEvolVarlist, cartesian, "[[ijk]]"];
+  ManipulateVarlist["set components using indepentent var index",
+                    EvolVarlist, cartesian, "[[ijk]]"];
+  ManipulateVarlist["set components using indepentent var index",
+                    MoreInputVarlist, cartesian, "[[ijk]]"];
+  ManipulateVarlist["set components using indepentent var index",
+                    TempVarlist, cartesian, "[[ijk]]"];
+  Print["Done"];
+
+  (* print initializations *)
+  Print["Printing components ..."];
+  ManipulateVarlist["print components initialization: vlr",
+                    dtEvolVarlist, cartesian, "[[ijk]]"];
+  ManipulateVarlist["print components initialization: vlu",
+                    EvolVarlist, cartesian, "[[ijk]]"];
+  ManipulateVarlist["print components initialization: more input",
+                    MoreInputVarlist, cartesian, "[[ijk]]"];
+  ManipulateVarlist["print components initialization: temporary",
+                    TempVarlist, cartesian, "[[ijk]]"];
   pr[];
+  Print["Done"];
+
   (* print equations *)
+  Print["Printing components ..."];
+  pr["if(Msqr)"];
+  pr["{"];
+  ManipulateVarlist["print components equation: primary with suffix",
+                    dtEvolVarlist, cartesian, "Msqr"];
+  pr["}"];
+  pr["else"];
+  pr["{"];
+  ManipulateVarlist["print components equation: primary with suffix",
+                    dtEvolVarlist, cartesian, "otherwise"];
+  pr["}"];
   pr[]
+  Print["Done"];
 ]
 
 $endPart[] := Module[{},
@@ -99,5 +137,6 @@ $endPart[] := Module[{},
    pr["}"]
 ];
 
-<< ../Codes/Nmesh.wl
+(*<< ../Codes/Nmesh.wl*)
+Import[FileNameJoin[{ParentDirectory[currentDir], "Codes/Nmesh.wl"}]]
 

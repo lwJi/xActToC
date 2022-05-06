@@ -54,3 +54,7 @@ $Bool$PrintVerbose = False;
 (* suffix to be added to vars, which would conflict with system default vars otherwise *)
 $Suffix$Unprotected = "$Upt";
 
+(* file name and project name *)
+$outputFile = "output.c";
+$projectName = "TEST";
+
