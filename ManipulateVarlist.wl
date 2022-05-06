@@ -286,7 +286,7 @@ SetComponentAndIndexMap[mode_, compName_, exprName_] := Module[
   $Bool$NewVarlist = False
 ];
 
-PrintComponent[mode, coordinate, varName, compName, rhssName, gridPointIndex] := Module[
+PrintComponent[mode_, coordinate_, varName_, compName_, rhssName_, gridPointIndex_] := Module[
   {},
   Which[
     (* print var initialization *)
@@ -295,7 +295,7 @@ PrintComponent[mode, coordinate, varName, compName, rhssName, gridPointIndex] :=
     (* print var equations *)
     PrintComponentInitialization[mode, coordinate, varName, compName, rhssName, gridPointIndex],
     StringMatchQ[mode, "print equation*"],
-    PrintComponentEquation[mode, coordinate, varName, compName, rhssName, gridPointIndex],
+    PrintComponentEquation[mode, coordinate, compName, rhssName, gridPointIndex],
     (* mode undefined *)
     True,
     Message[PrintComponent::ErrorMode, mode]; Abort[]
@@ -303,7 +303,7 @@ PrintComponent[mode, coordinate, varName, compName, rhssName, gridPointIndex] :=
 ];
 PrintComponent::ErrorMode = "Print mode `1` unsupported yet !";
 
-PrintComponentEquation[mode, coordinate, varName, compName, rhssName, suffixName] := Module[
+PrintComponentEquation[mode_, coordinate_, compName_, rhssName_, suffixName_] := Module[
   {
     compToValue = compName//ToValues,
     rhssToValue = rhssName//DummyToBasis[coordinate]//TraceBasisDummy//ToValues//Simplify

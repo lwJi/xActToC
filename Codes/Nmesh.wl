@@ -9,6 +9,10 @@
 (* =============== *)
 (* Definition Part *)
 (* =============== *)
+PrintComponentInitialization[mode_, coordinate_, varName_, compName_, rhssName_, gridPointIndex_] := Module[
+  {},
+  Print["Calling PrintComponentInitialization..."]
+]
 
 
 (* ============== *)
