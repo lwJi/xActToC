@@ -92,13 +92,13 @@ $headPart[] := Module[{},
 $bodyPart[] := Module[{},
   (* set components *)
   Print["Setting components ..."];
-  ManipulateVarlist["set components using indepentent var index",
+  ManipulateVarlist["set components using independent var index",
                     dtEvolVarlist, cartesian, "[[ijk]]"];
-  ManipulateVarlist["set components using indepentent var index",
+  ManipulateVarlist["set components using independent var index",
                     EvolVarlist, cartesian, "[[ijk]]"];
-  ManipulateVarlist["set components using indepentent var index",
+  ManipulateVarlist["set components using independent var index",
                     MoreInputVarlist, cartesian, "[[ijk]]"];
-  ManipulateVarlist["set components using indepentent var index",
+  ManipulateVarlist["set components using independent var index",
                     TempVarlist, cartesian, "[[ijk]]"];
   Print["Done"];
 

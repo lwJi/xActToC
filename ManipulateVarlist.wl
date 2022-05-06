@@ -205,28 +205,6 @@ ManipulateComponent[compIndexList_, mode_, coordinate_, varName_, gridPointIndex
 ];
 ManipulateComponent::ErrorMode = "Manipulate mode \"`1`\" undefined !";
 
-(* define tensors *)
-DefineTensor[var_] := Module[
-  {
-    varName
-  },
-  varName = var[[1]];
-  Switch[Length[var], (* var length: how many descriptions for var *)
-    3,
-    DefTensor[varName, $Manifd, var[[2]], PrintAs->var[[3]]],
-    2,
-    If[StringQ[var[[2]]],
-      DefTensor[varName, $Manifd, PrintAs->var[[2]]],
-      DefTensor[varName, $Manifd, var[[2]]]
-    ],
-    1,
-    DefTensor[varName, $Manifd],
-    _,
-    Message[DefineTensor::ErrorTensorType, varName]; Abort[]
-  ] (* end of Switch *)
-];
-DefineTensor::ErrorTensorType = "Tensor type of `1` unsupported yet !";
-
 (* set name of component, rhs of component and component value *)
 SetNameArray[compIndexList_, coordinate_, varName_, gridPointIndex_] := Module[
   {
@@ -254,6 +232,28 @@ SetNameArray[compIndexList_, coordinate_, varName_, gridPointIndex_] := Module[
   {compName, rhssName, exprName}
 ];
 
+(* define tensors *)
+DefineTensor[var_] := Module[
+  {
+    varName
+  },
+  varName = var[[1]];
+  Switch[Length[var], (* var length: how many descriptions for var *)
+    3,
+    DefTensor[varName, $Manifd, var[[2]], PrintAs->var[[3]]],
+    2,
+    If[StringQ[var[[2]]],
+      DefTensor[varName, $Manifd, PrintAs->var[[2]]],
+      DefTensor[varName, $Manifd, var[[2]]]
+    ],
+    1,
+    DefTensor[varName, $Manifd],
+    _,
+    Message[DefineTensor::ErrorTensorType, varName]; Abort[]
+  ] (* end of Switch *)
+];
+DefineTensor::ErrorTensorType = "Tensor type of `1` unsupported yet !";
+
 (* different modes of set components, also set global map of varlist:
      1. mode 'set components with vlu order': using order in varlist,
      2. mode 'set components with independent order': using order start with 0.
@@ -272,7 +272,7 @@ SetComponentAndIndexMap[mode_, compName_, exprName_] := Module[
   *)
   If[Length[$Map$ComponentToVarlist]==0 || (* global varlist is empty *)
      $Bool$NewVarlist ||                   (* new local varlist start *)
-     (StringMatchQ[mode, "set components and using independent var index"] && (compName[[0]]=!=Last[$Map$ComponentToVarlist][[1,0]])), (* new var in local varlist *)
+     (StringMatchQ[mode, "set components using independent var index"] && (compName[[0]]=!=Last[$Map$ComponentToVarlist][[1,0]])), (* new var in local varlist *)
     varlistIndex = -1,
     varlistIndex = Last[$Map$ComponentToVarlist][[2]]
   ];
@@ -305,7 +305,7 @@ PrintComponent::ErrorMode = "Print mode `1` unsupported yet !";
 PrintComponentEquation[mode_, coordinate_, compName_, rhssName_, suffixName_] := Module[
   {
     compToValue = compName//ToValues,
-    rhssToValue = If[ValueQ[rhssName], rhssName//DummyToBasis[coordinate]//TraceBasisDummy//ToValues//Simplify, "UndefinedRhs"]
+    rhssToValue = rhssName//DummyToBasis[coordinate]//TraceBasisDummy//ToValues//Simplify
   },
   (* different modes *)
   Which[
@@ -313,35 +313,34 @@ PrintComponentEquation[mode_, coordinate_, compName_, rhssName_, suffixName_] :=
     StringMatchQ[mode,"print components equation: temporary"],
     Module[{},
       pr["double "];
-      PutAppend[CForm[compToValue],file]; pr["=\n"];
-      PutAppend[CForm[rhssToValue],file]; pr[";\n\n"];
+      PutAppend[CForm[compToValue],$outputFile]; pr["=\n"];
+      PutAppend[CForm[rhssToValue],$outputFile]; pr[";\n\n"];
     ],
     (* equations of primary output variables *)
     StringMatchQ[mode,"print components equation: primary"],
     Module[{},
-      PutAppend[CForm[compToValue],file]; pr["=\n"];
-      PutAppend[CForm[rhssToValue],file]; pr[";\n\n"];
+      PutAppend[CForm[compToValue],$outputFile]; pr["=\n"];
+      PutAppend[CForm[rhssToValue],$outputFile]; pr[";\n\n"];
     ],
     (* equations of primary output variables with suffix, say "dtPinn$fromdtK", where suffixName='fromdtK' *)
     StringMatchQ[mode,"print components equation: primary with suffix"],
-    Module[{rhssSuffixName = rhssName/.{rhssName[[0]]->ToExpression[ToString[rhssName[[0]]]<>"$"<>suffixName]}},
-      rhssToValue = If[ValueQ[rhssSuffixName], rhssSuffixName//DummyToBasis[coordinate]//TraceBasisDummy//ToValues//Simplify,
-                                               Message[PrintComponentEquation::ErrorUndefined, rhssName]; Abort[]];
-      PutAppend[CForm[compToValue],file]; pr["=\n"];
-      PutAppend[CForm[rhssToValue],file]; pr[";\n\n"];
+    Module[{},
+      rhssToValue = (rhssName/.{rhssName[[0]]->ToExpression[ToString[rhssName[[0]]]<>"$"<>suffixName]})//DummyToBasis[coordinate]//TraceBasisDummy//ToValues//Simplify;
+      PutAppend[CForm[compToValue],$outputFile]; pr["=\n"];
+      PutAppend[CForm[rhssToValue],$outputFile]; pr[";\n\n"];
     ],
     (* equations of adding more terms to primary variables, say add matter terms to dt_U *)
     StringMatchQ[mode,"print components equation: adding to primary"],
     Module[{},
-      PutAppend[CForm[compToValue],file]; pr["+=\n"];
-      PutAppend[CForm[rhssToValue],file]; pr[";\n\n"]
+      PutAppend[CForm[compToValue],$outputFile]; pr["+=\n"];
+      PutAppend[CForm[rhssToValue],$outputFile]; pr[";\n\n"]
     ],
     (* equations flux construction *)
     StringMatchQ[mode,"print components equation: primary for flux"],
     Module[{},
       pr["double "];
-      PutAppend[CForm[compToValue],file]; pr["=\n"];
-      PutAppend[CForm[rhssToValue],file]; pr[";\n\n"];
+      PutAppend[CForm[compToValue],$outputFile]; pr["=\n"];
+      PutAppend[CForm[rhssToValue],$outputFile]; pr[";\n\n"];
     ],
     (* mode undefined *)
     True,
