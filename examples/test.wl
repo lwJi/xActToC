@@ -10,13 +10,13 @@
 (* ====================== *)
 (* Set manifold and chart *)
 (* ====================== *)
-(* $dim = 4 *)
-SetManifoldAndChart[4, cartesian];
+(* $dim = 3 *)
+SetManifoldAndChart[3, cartesian];
 
 (* more setup (not needed in most common cases) *)
 DefMetric[1, euclid[-i, -j], CD];
-MetricInBasis[euclid, -cartes, DiagonalMatrix[{1, 1, 1}]];
-MetricInBasis[euclid, cartes, DiagonalMatrix[{1, 1, 1}]];
+MetricInBasis[euclid, -cartesian, DiagonalMatrix[{1, 1, 1}]];
+MetricInBasis[euclid, cartesian, DiagonalMatrix[{1, 1, 1}]];
 
 (*############################################################################
    Guess what we are doing:
@@ -52,6 +52,52 @@ IndexSet[RHSOf[rU,"otherwise"][i_], vU[i]];
 (* Write to files *)
 (* ============== *)
 $outputFile = "test.c";
+
+$headPart[] := Module[{},
+  pr["#include \"nmesh.h\""];
+  pr["#include \"C3GH.h\""];
+  pr[];
+  pr["#define Power(x,y) (pow((double) (x),(double) (y)))"];
+  pr["#define Log(x) log((double) (x))"];
+  pr["#define pow2(x) ((x)*(x))"];
+  pr["#define pow2inv(x) (1.0/((x)*(x)))"];
+  pr["#define Cal(x,y,z) ((x)?(y):(z))"];
+  pr["#define Sqrt(x) sqrt(x)"];
+  pr["#define Abs(x) fabs(x)"];
+  pr[];
+  pr[];
+  pr["/* use globals from C3GH */"];
+  pr["extern tC3GH C3GH[1];"];
+  pr[];
+  pr[];
+  pr["void test(tVarList *vlu, tVarList *vlr)"];
+  pr["{"];
+  pr["tMesh *mesh = u->mesh;"];
+  pr[];
+  pr["int Msqr = GetvLax(Par(\"ADM_ConstraintNorm\"), \"Msqr \");"];
+  pr[];
+  pr["formylnodes(mesh)"];
+  pr["{"];
+  pr["tNode *node = MyLnode;"];
+  pr["int ijk;"];
+  pr[];
+  pr["forpoints(node, ijk)"];
+  pr["{"];
+  pr["int iMDD = Ind(\"ADM_gxx\");"]
+];
+
+$bodyPart[] := Module[{},
+  (* print components*)
+  pr[];
+  (* print equations *)
+  pr[]
+]
+
+$endPart[] := Module[{},
+   pr["} /* end of points */"];
+   pr["} /* end of nodes */"];
+   pr["}"]
+];
 
 << ../Codes/Nmesh.wl
 
