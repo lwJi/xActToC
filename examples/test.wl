@@ -6,8 +6,9 @@
 
 
 (* << ../xActToC.wl *)
-currentDir=If[$InputFileName=="",NotebookDirectory[],DirectoryName[$InputFileName]];
-Needs["xAct`xTras`", FileNameJoin[{ParentDirectory[currentDir], "xActToC.wl"}]];
+$currentDir = If[$InputFileName=="", NotebookDirectory[],
+                                     DirectoryName[$InputFileName]];
+Needs["xAct`xTras`", FileNameJoin[{ParentDirectory[$currentDir],"xActToC.wl"}]];
 
 (* ====================== *)
 (* Set manifold and chart *)
@@ -20,15 +21,17 @@ DefMetric[1, euclid[-i, -j], CD];
 MetricInBasis[euclid, -cartesian, DiagonalMatrix[{1, 1, 1}]];
 MetricInBasis[euclid, cartesian, DiagonalMatrix[{1, 1, 1}]];
 
+
+(* ================================ *)
+(* Variable and equation defintions *)
+(* ================================ *)
+
 (*############################################################################
    Guess what we are doing:
     r^i = M^i_j M^j_k u^k     if ADM_ConstraintNorm = Msqr
     r^i = M^i_j u^j           otherwise
   ############################################################################*)
 
-(* ================================ *)
-(* Variable and equation defintions *)
-(* ================================ *)
 (* varible list *)
 dtEvolVarlist = {
    {rU[i]}
@@ -47,7 +50,6 @@ TempVarlist = {
 IndexSet[RHSOf[vU][i_], euclid[i,k]MDD[-k,-j]uU[j]];
 IndexSet[RHSOf[rU,"Msqr"][i_], euclid[i,k]MDD[-k,-j]vU[j]];
 IndexSet[RHSOf[rU,"otherwise"][i_], vU[i]];
-
 
 
 (* ============== *)
@@ -92,13 +94,13 @@ $headPart[] := Module[{},
 $bodyPart[] := Module[{},
   (* set components *)
   Print["Setting components ..."];
-  ManipulateVarlist["set components using independent var index",
+  ManipulateVarlist["set components: independent varlist index",
                     dtEvolVarlist, cartesian, "[[ijk]]"];
-  ManipulateVarlist["set components using independent var index",
+  ManipulateVarlist["set components: independent varlist index",
                     EvolVarlist, cartesian, "[[ijk]]"];
-  ManipulateVarlist["set components using independent var index",
+  ManipulateVarlist["set components: independent varlist index",
                     MoreInputVarlist, cartesian, "[[ijk]]"];
-  ManipulateVarlist["set components using independent var index for temporary var",
+  ManipulateVarlist["set components: for temporary varlist",
                     TempVarlist, cartesian, "[[ijk]]"];
   pr[];
   Print["Done"];
@@ -139,5 +141,5 @@ $endPart[] := Module[{},
 ];
 
 (* << ../Codes/Nmesh.wl *)
-Import[FileNameJoin[{ParentDirectory[currentDir], "Codes/Nmesh.wl"}]]
+Import[FileNameJoin[{ParentDirectory[$currentDir], "Codes/Nmesh.wl"}]]
 

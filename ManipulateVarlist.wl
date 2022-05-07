@@ -192,7 +192,7 @@ ManipulateComponent[compIndexList_, mode_, coordinate_, varName_, gridPointIndex
   ];
   (* set components or print components/equations *)
   Which[
-    (* set componentes *)
+    (* set components *)
     StringMatchQ[mode, "set components*"],
     SetComponentAndIndexMap[mode, compName, exprName]; PrintVerbose["Set Component ", compName, " for Tensor ", varName[[0]]],
     (* print componentes *)
@@ -227,7 +227,7 @@ SetNameArray[compIndexList_, mode_, coordinate_, varName_, gridPointIndex_] := M
       exprName = exprName<>ToString@compIndexList[[compIndex]],
     {compIndex, 1, Length[compIndexList]}]
   ];
-  If[StringMatchQ[mode, "set components using independent var index for temporary var"],
+  If[StringMatchQ[mode, "set components: for temporary varlist"],
     exprName=ToExpression[exprName],
     exprName=ToExpression[exprName<>gridPointIndex]
   ];
@@ -275,7 +275,7 @@ SetComponentAndIndexMap[mode_, compName_, exprName_] := Module[
   *)
   If[Length[$map$ComponentToVarlist]==0 || (* global varlist is empty *)
      $bool$NewVarlist ||                   (* new local varlist start *)
-     (StringMatchQ[mode, "set components using independent var index*"] && (compName[[0]]=!=Last[$map$ComponentToVarlist][[1,0]])), (* new var in local varlist *)
+     (StringMatchQ[mode, "set components: independent varlist index"] && (compName[[0]]=!=Last[$map$ComponentToVarlist][[1,0]])), (* new var in local varlist *)
     varlistIndex = -1,
     varlistIndex = Last[$map$ComponentToVarlist][[2]]
   ];
