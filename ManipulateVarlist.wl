@@ -243,10 +243,10 @@ DefineTensor[var_] := Module[
   varName = var[[1]];
   Switch[Length[var], (* var length: how many descriptions for var *)
     3,
-    DefTensor[varName, $Manifd, var[[2]], PrintAs->var[[3]]],
+    DefTensor[varName, $Manifd, var[[2]], var[[3]]],
     2,
     If[StringQ[var[[2]]],
-      DefTensor[varName, $Manifd, PrintAs->var[[2]]],
+      DefTensor[varName, $Manifd, var[[2]]],
       DefTensor[varName, $Manifd, var[[2]]]
     ],
     1,

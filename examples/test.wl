@@ -129,7 +129,7 @@ $bodyPart[] := Module[{},
                     dtEvolVarlist, cartesian, "otherwise"];
   pr["}"];
   pr[]
-]
+];
 
 $endPart[] := Module[{},
    pr["} /* end of points */"];
