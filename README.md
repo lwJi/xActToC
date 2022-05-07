@@ -35,7 +35,17 @@ to remove the trailing spaces in all these files.
 
 * `print components*`
 
-    * `print components initialization*`
+    * `print components initialization*`, which shoulde be define by user, here we use `Nmesh` as an example
+
+        * `print components initializatoin: vlr`
+
+        * `print components initializatoin: vlr using vlpush_index`
+
+        * `print components initializatoin: vlu`
+
+        * `print components initializatoin: vlu using vlpush_index`
+
+        * `print components initializatoin: more input`
 
     * `print components equation*`
 

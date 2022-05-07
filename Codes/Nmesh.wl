@@ -9,6 +9,8 @@
 (* =============== *)
 (* Definition Part *)
 (* =============== *)
+
+(* print components initialization *)
 PrintComponentInitialization[mode_, varName_, compName_, gridPointIndex_] := Module[
   {
     varlistIndex = $map$ComponentToVarlist[[Position[$map$ComponentToVarlist,compName][[1,1]], 2]],
@@ -35,27 +37,21 @@ PrintComponentInitialization[mode_, varName_, compName_, gridPointIndex_] := Mod
     StringMatchQ[mode,"print components initialization: more input"],
     buf="double *"<>StringTrim[ToString[compToValue],gridPointIndex]<>" = Vard(node, i"<>ToString[varName[[0]]]<>getInitialComp[varName]
       <>If[varlistIndex==0,"","+"<>ToString[varlistIndex]]<>");",
-    (* print temporary var initialization *)
-    StringMatchQ[mode,"print components initialization: temporary"],
-    buf="double "<>StringTrim[ToString[compToValue],gridPointIndex]<>";",
     (* mode undefined *)
     True,
     Message[PrintComponentInitialization::ErrorMode, mode]; Abort[]
   ];
-  pr[buf]
+  pr[buf];
 ];
 PrintComponentInitialization::ErrorMode = "Print component mode `1` unsupported yet !";
 
-(* get the initial component expression of a tensor *)
+(* return the initial component expression of a tensor *)
 getInitialComp[varName_] := Module[
   {
     initialComp = ""
   },
   Do[
-    If[is3DAbstractIndex[varName[[compIndex]]],
-      initialComp = initialComp<>"x", (* add 'x' if it's a 3D index *)
-      initialComp = initialComp<>"t"  (* add 't' if it's a 4D index *)
-    ],
+    If[is3DAbstractIndex[varName[[compIndex]]], initialComp = initialComp<>"x", initialComp = initialComp<>"t"],
   {compIndex,1,Length[varName]}];
   initialComp
 ];
@@ -64,26 +60,24 @@ getInitialComp[varName_] := Module[
 (* ============== *)
 (* Write to files *)
 (* ============== *)
+
 Print["============================================================"];
 Print[" Writing to ", $outputFile];
 Print["============================================================"];
-If[FileExistsQ[$outputFile],
-  Print[$outputFile, " already exist, replacing it ..."];
-  DeleteFile[$outputFile]
-];
-filePointer = OpenAppend[$outputFile];
+If[FileExistsQ[$outputFile], Print[$outputFile, " already exist, replacing it ..."];DeleteFile[$outputFile]];
+
 (* define pr *)
+filePointer = OpenAppend[$outputFile];
 pr[x_:""] := Module[{}, WriteLine[filePointer, x]];
-(* print first lines *)
+
+(* print first few lines *)
 pr["/* "<>$outputFile<>" */"];
 pr["/* (c) Liwei Ji "<>DateString[{"Month","/","Day","/","Year"}]<>" */"];
 pr["/* Produced with Mathematica */"];
 pr[];
 
 $headPart[];
-
 $bodyPart[];
-
 $endPart[];
 
 Print["Done generating ", $outputFile, "\n"];
