@@ -30,20 +30,16 @@ ManipulateVarlist[mode_?StringQ, varlist_?ListQ, coordinate_, gridPointIndex_?St
     varName = var[[1]];      (* say metricg[-a,-b] *)
     varLength = Length[var]; (* var length: how many descriptions for var *)
     varWithSymmetry = (varLength==3) || (varLength==2&&(!StringQ[var[[2]]])); (* if with symmetry *)
-    If[varWithSymmetry,
-      varSymmetryName = var[[2]][[0]];
-      varSymmetryIndex = var[[2]][[1]]
-    ]
-
+    If[varWithSymmetry, varSymmetryName=var[[2]][[0]];varSymmetryIndex=var[[2]][[1]]];
     (* check if tensor defined yet *)
-    If[!xTensorQ[varName[[0]]], (* if tensor name exist already *)
+    If[!xTensorQ[varName[[0]]],
       (* tensor not exist, creat one *)
       If[StringMatchQ[mode, "set components*"],
         DefineTensor[var]; PrintVerbose["Define Tensor ", varName[[0]]],
         Message[ManipulateVarlist::ErrorTensorNonExist, iVar, varName, varlist]; Abort[]
       ],
-      (* tensor exist *)
-      If[!MemberQ[$map$ComponentToVarlist[[All, 1, 0]], varName[[0]]], (* if tensor name is outside the global varlist *)
+      (* tensor exist already: if tensor name is outside the global varlist *)
+      If[!MemberQ[$map$ComponentToVarlist[[All, 1, 0]], varName[[0]]],
         Message[ManipulateVarlist::ErrorTensorExistOutside, iVar, varName, varlist]; Abort[]
       ]
     ];
@@ -52,120 +48,97 @@ ManipulateVarlist[mode_?StringQ, varlist_?ListQ, coordinate_, gridPointIndex_?St
 
     (* consider different types of tensor *)
     Switch[Length[varName],
-      (* ---------------- *)
       (* ZERO INDEX CASE: *)
-      (* ---------------- *)
       0,
-      Continue[],
-
-      (* --------------- *)
+      manipulateComponentValue[{}],
       (* ONE INDEX CASE: *)
-      (* --------------- *)
       1,
       Do[manipulateComponentValue[{ia}], {ia,iMin,iMax}],
-
-      (* ----------------- *)
       (* TWO INDEXES CASE: *)
-      (* ----------------- *)
       2,
       If[varWithSymmetry,
         (* With Symmetry *)
-        Module[{},
-          Switch[varSymmetryName,
-            Symmetric,
-            Do[manipulateComponentValue[{ia,ib}], {ia,iMin,iMax},{ib,ia,iMax}],
-            Antisymmetric,
-            Do[manipulateComponentValue[{ia,ib}], {ia,iMin,iMax},{ib,ia+1,iMax}],
-            _,
-            Message[ManipulateVarlist::ErrorSymmetryType, iVar, varName, varlist]; Abort[]
-          ];
-          varName//ToBasis[coordinate]//ComponentArray//ComponentValue
-        ],
+        Switch[varSymmetryName,
+          Symmetric,
+          Do[manipulateComponentValue[{ia,ib}], {ia,iMin,iMax},{ib,ia,iMax}],
+          Antisymmetric,
+          Do[manipulateComponentValue[{ia,ib}], {ia,iMin,iMax},{ib,ia+1,iMax}],
+          _,
+          Message[ManipulateVarlist::ErrorSymmetryType, iVar, varName, varlist]; Abort[]
+        ];
+        varName//ToBasis[coordinate]//ComponentArray//ComponentValue,
         (* Without Symmetry *)
         Do[manipulateComponentValue[{ia,ib}], {ia,iMin,iMax},{ib,iMin,iMax}]
       ],
-
-      (* ------------------ *)
       (* THREE INDEXES CASE *)
-      (* ------------------ *)
       3,
       If[varWithSymmetry,
         (* With Symmetry *)
-        Module[{},
-          Which[
-            (* c(ab) or c[ab] *)
-            (varSymmetryIndex[[1]]===varName[[2]]) && (varSymmetryIndex[[2]]===varName[[3]]),
-            Switch[varSymmetryName,
-              Symmetric,
-              Do[manipulateComponentValue[{ic,ia,ib}], {ic,iMin,iMax},{ia,iMin,iMax},{ib,ia,iMax}],
-              Antisymmetric,
-              Do[manipulateComponentValue[{ic,ia,ib}], {ic,iMin,iMax},{ia,iMin,iMax},{ib,ia+1,iMax}],
-              _,
-              Message[ManipulateVarlist::ErrorSymmetryType, iVar, varName, varlist]; Abort[]
-            ],
-            (* (ab)c or [ab]c *)
-            (varSymmetryIndex[[1]]===varName[[1]]) && (varSymmetryIndex[[2]]===varName[[2]]),
-            Switch[varSymmetryName,
-              Symmetric,
-              Do[manipulateComponentValue[{ia,ib,ic}], {ia,iMin,iMax},{ib,ia,iMax},{ic,iMin,iMax}],
-              Antisymmetric,
-              Do[manipulateComponentValue[{ia,ib,ic}], {ia,iMin,iMax},{ib,ia+1,iMax},{ic,iMin,iMax}],
-              _,
-              Message[ManipulateVarlist::ErrorSymmetryType, iVar, varName, varlist]; Abort[]
-            ],
-            (* other three indexes cases *)
-            True,
+        Which[
+          (* c(ab) or c[ab] *)
+          (varSymmetryIndex[[1]]===varName[[2]]) && (varSymmetryIndex[[2]]===varName[[3]]),
+          Switch[varSymmetryName,
+            Symmetric,
+            Do[manipulateComponentValue[{ic,ia,ib}], {ic,iMin,iMax},{ia,iMin,iMax},{ib,ia,iMax}],
+            Antisymmetric,
+            Do[manipulateComponentValue[{ic,ia,ib}], {ic,iMin,iMax},{ia,iMin,iMax},{ib,ia+1,iMax}],
+            _,
             Message[ManipulateVarlist::ErrorSymmetryType, iVar, varName, varlist]; Abort[]
-          ];
-          varName//ToBasis[coordinate]//ComponentArray//ComponentValue
-        ],
+          ],
+          (* (ab)c or [ab]c *)
+          (varSymmetryIndex[[1]]===varName[[1]]) && (varSymmetryIndex[[2]]===varName[[2]]),
+          Switch[varSymmetryName,
+            Symmetric,
+            Do[manipulateComponentValue[{ia,ib,ic}], {ia,iMin,iMax},{ib,ia,iMax},{ic,iMin,iMax}],
+            Antisymmetric,
+            Do[manipulateComponentValue[{ia,ib,ic}], {ia,iMin,iMax},{ib,ia+1,iMax},{ic,iMin,iMax}],
+            _,
+            Message[ManipulateVarlist::ErrorSymmetryType, iVar, varName, varlist]; Abort[]
+          ],
+          (* other three indexes cases *)
+          True,
+          Message[ManipulateVarlist::ErrorSymmetryType, iVar, varName, varlist]; Abort[]
+        ]; (* end of Which *)
+        varName//ToBasis[coordinate]//ComponentArray//ComponentValue,
         (* Without Symmetry *)
         Do[manipulateComponentValue[{ic,ia,ib}], {ic,iMin,iMax},{ia,iMin,iMax},{ib,iMin,iMax}]
       ],
-
-      (* ----------------- *)
       (* FOUR INDEXES CASE *)
-      (* ----------------- *)
       4,
       If[varWithSymmetry,
         (* With Symmetry *)
-        Module[{},
+        Which[
+          (* cd(ab) or cd[ab] *)
+          (varSymmetryIndex[[1]]===varName[[3]]) && (varSymmetryIndex[[2]]===varName[[4]]),
+          Switch[varSymmetryName,
+            Symmetric,
+            Do[manipulateComponentValue[{ic,id,ia,ib}], {ic,iMin,iMax},{id,iMin,iMax},{ia,iMin,iMax},{ib,ia,iMax}],
+            Antisymmetric,
+            Do[manipulateComponentValue[{ic,id,ia,ib}], {ic,iMin,iMax},{id,iMin,iMax},{ia,iMin,iMax},{ib,ia+1,iMax}],
+            _,
+            Message[ManipulateVarlist::ErrorSymmetryType, iVar, varName, varlist]; Abort[]
+          ],
+          (* (cd)(ab) or ... *)
+          varSymmetryName==GenSet,
           Which[
-            (* cd(ab) or cd[ab] *)
-            (varSymmetryIndex[[1]]===varName[[3]]) && (varSymmetryIndex[[2]]===varName[[4]]),
-            Switch[varSymmetryName,
-              Symmetric,
-              Do[manipulateComponentValue[{ic,id,ia,ib}], {ic,iMin,iMax},{id,iMin,iMax},{ia,iMin,iMax},{ib,ia,iMax}],
-              Antisymmetric,
-              Do[manipulateComponentValue[{ic,id,ia,ib}], {ic,iMin,iMax},{id,iMin,iMax},{ia,iMin,iMax},{ib,ia+1,iMax}],
-              _,
-              Message[ManipulateVarlist::ErrorSymmetryType, iVar, varName, varlist]; Abort[]
-            ],
-            (* (cd)(ab) or ... *)
-            varSymmetryName==GenSet,
-            Which[
-              (var[[2]][[1]]==Cycles[{1,2}]) && (var[[2]][[2]]==Cycles[{3,4}]),
-              Do[manipulateComponentValue[{ic,id,ia,ib}], {ic,iMin,iMax},{id,ic,iMax},{ia,iMin,iMax},{ib,ia,iMax}],
-              True,
-              Message[ManipulateVarlist::ErrorSymmetryType, iVar, varName, varlist]; Abort[]
-            ],
-            (* other four indexes cases *)
+            (var[[2]][[1]]==Cycles[{1,2}]) && (var[[2]][[2]]==Cycles[{3,4}]),
+            Do[manipulateComponentValue[{ic,id,ia,ib}], {ic,iMin,iMax},{id,ic,iMax},{ia,iMin,iMax},{ib,ia,iMax}],
             True,
             Message[ManipulateVarlist::ErrorSymmetryType, iVar, varName, varlist]; Abort[]
-          ];
-          varName//ToBasis[coordinate]//ComponentArray//ComponentValue
-        ],
+          ],
+          (* other four indexes cases *)
+          True,
+          Message[ManipulateVarlist::ErrorSymmetryType, iVar, varName, varlist]; Abort[]
+        ]; (* end of Which *)
+        varName//ToBasis[coordinate]//ComponentArray//ComponentValue,
         (* Without Symmetry *)
         Do[manipulateComponentValue[{ic,id,ia,ib}], {ic,iMin,iMax},{id,iMin,iMax},{ia,iMin,iMax},{ib,iMin,iMax}]
       ],
-
-      (* -------------------- *)
       (* OTHER NUM OF INDEXES *)
-      (* -------------------- *)
       _,
       Message[ManipulateVarlist::ErrorTensorType, iVar, varName, varlist]; Abort[]
     ], (* end of Switch*)
-  {iVar, 1, Length[varlist]}] (* end of Do *)
+  {iVar, 1, Length[varlist]}]; (* end of Do *)
 ];
 ManipulateVarlist::ErrorTensorNonExist = "Tensor of the `1`-th var, `2`, in varlist `3` can't be defined since it's in 'print components' mode. Please set its components first !";
 ManipulateVarlist::ErrorTensorExistOutside = "Tensor of the `1`-th var, `2`, in varlist `3` already exsit outside the global varlist !";
@@ -184,10 +157,11 @@ ManipulateComponent[compIndexList_, mode_, coordinate_, varName_, gridPointIndex
   },
   (* set names *)
   {compName,rhssName,exprName} = SetNameArray[compIndexList, mode, coordinate, varName, gridPointIndex];
-  (* find out 4D component (0-compopnent here) of a 3D tensor, which should be skipped *)
+  (* skip those 4D component (0-compopnent here) of a 3D tensor *)
   If[is4DCompIndexListIn3DTensor[compIndexList,varName],
     (* set those 'up' 0-component to 0 for a 3D tensor *)
     If[isUp4DCompIndexListIn3DTensor[compIndexList,varName], ComponentValue[compName, 0]];
+    (* skip *)
     Continue[]
   ];
   (* set components or print components/equations *)
@@ -201,11 +175,11 @@ ManipulateComponent[compIndexList_, mode_, coordinate_, varName_, gridPointIndex
     (* error mode *)
     True,
     Message[ManipulateComponent::ErrorMode, mode]; Abort[]
-  ]
+  ];
 ];
 ManipulateComponent::ErrorMode = "Manipulate mode \"`1`\" undefined !";
 
-(* set name of component, rhs of component and component value *)
+(* return name array of component, rhs of component and component value *)
 SetNameArray[compIndexList_, mode_, coordinate_, varName_, gridPointIndex_] := Module[
   {
     coordFull, (* consider covariant or contravariant *)
@@ -238,22 +212,18 @@ SetNameArray[compIndexList_, mode_, coordinate_, varName_, gridPointIndex_] := M
 (* define tensors *)
 DefineTensor[var_] := Module[
   {
-    varName
+    varName = var[[1]]
   },
-  varName = var[[1]];
   Switch[Length[var], (* var length: how many descriptions for var *)
     3,
     DefTensor[varName, $Manifd, var[[2]], var[[3]]],
     2,
-    If[StringQ[var[[2]]],
-      DefTensor[varName, $Manifd, var[[2]]],
-      DefTensor[varName, $Manifd, var[[2]]]
-    ],
+    DefTensor[varName, $Manifd, var[[2]]],
     1,
     DefTensor[varName, $Manifd],
     _,
     Message[DefineTensor::ErrorTensorType, varName]; Abort[]
-  ] (* end of Switch *)
+  ]; (* end of Switch *)
 ];
 DefineTensor::ErrorTensorType = "Tensor type of `1` unsupported yet !";
 
@@ -286,22 +256,21 @@ SetComponentAndIndexMap[mode_, compName_, exprName_] := Module[
     PrintVerbose["Skip adding Component ", compName, " to Global VarList, since it already exist"],
     AppendTo[$map$ComponentToVarlist, {compName, varlistIndex}]; PrintVerbose["Add Component ", compName, " to Global VarList"]
   ];
-  $bool$NewVarlist = False
+  $bool$NewVarlist = False;
 ];
 
-PrintComponent[mode_, coordinate_, varName_, compName_, rhssName_, gridPointIndex_] := Module[
-  {},
+PrintComponent[mode_, coordinate_, varName_, compName_, rhssName_, gridPointIndex_] := Module[{},
   Which[
     (* print var initialization *)
     StringMatchQ[mode, "print components initialization*"],
+    PrintComponentInitialization[mode, varName, compName, gridPointIndex],
     (* print var equations *)
-    PrintComponentInitialization[mode, coordinate, varName, compName, gridPointIndex],
     StringMatchQ[mode, "print components equation*"],
     PrintComponentEquation[mode, coordinate, compName, rhssName, gridPointIndex],
     (* mode undefined *)
     True,
     Message[PrintComponent::ErrorMode, mode]; Abort[]
-  ]
+  ];
 ];
 PrintComponent::ErrorMode = "Print mode `1` unsupported yet !";
 
@@ -348,7 +317,7 @@ PrintComponentEquation[mode_, coordinate_, compName_, rhssName_, suffixName_] :=
     (* mode undefined *)
     True,
     Message[PrintComponentEquation::ErrorMode, mode]; Abort[]
-  ]
+  ];
 ];
 PrintComponentEquation::ErrorMode = "Print equation mode `1` unsupported yet !";
 PrintComponentEquation::ErrorUndefined = "Rhs expression `1` undefined !";

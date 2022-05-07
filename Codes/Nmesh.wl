@@ -9,7 +9,7 @@
 (* =============== *)
 (* Definition Part *)
 (* =============== *)
-PrintComponentInitialization[mode_, coordinate_, varName_, compName_, gridPointIndex_] := Module[
+PrintComponentInitialization[mode_, varName_, compName_, gridPointIndex_] := Module[
   {
     varlistIndex = $map$ComponentToVarlist[[Position[$map$ComponentToVarlist,compName][[1,1]], 2]],
     compToValue = compName//ToValues,

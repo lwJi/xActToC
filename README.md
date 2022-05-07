@@ -25,6 +25,29 @@ then run
 
 to remove the trailing spaces in all these files.
 
+## Different Modes
+
+* `set components*`
+
+    * `set components: for temporary varlist`
+
+    * `set components: independent varlist index`
+
+* `print components*`
+
+    * `print components initialization*`
+
+    * `print components equation*`
+
+        * `print components equation: temporary`
+
+        * `print components equation: primary`
+
+        * `print components equation: primary with suffix`
+
+        * `print components equation: adding to primary`
+
+        * `print components equation: primary for flux`
 
 ## Tricks
 
