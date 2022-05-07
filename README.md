@@ -2,9 +2,9 @@
 
 * Install Mathematica (versions which support 'wolframscript') . Download xAct from http://www.xact.es and install it properly.
 
-* Prepare ".wl" files for your own project in the corresponding directory (please check out those ''.wl" files in 'C3GH' as examples).
+* Prepare ".wl" files for your own project in the corresponding directory (please check out those ''.wl" files in the examples).
 
-* Run
+* Run with
 
 ```shell
 ../xActToc/generateC.sh *.wl
@@ -35,11 +35,9 @@ Opening ".wl" files with Mathematica is recommended. Because you can benefit fro
 
 | Original    | Abbreviation |
 | ----------- | ------------ |
-| Component   | Cpnt         |
-| Index       | Idx          |
+| Component   | Comp         |
 | Evolution   | Evol         |
 | Expression  | Expr         |
-| Tensor      | Tsr          |
 | Unprotected | Upt          |
 
 
