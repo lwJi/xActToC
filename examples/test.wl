@@ -5,10 +5,14 @@
 *)
 
 
+(* ========== *)
+(* Load files *)
+(* ========== *)
 (* << ../xActToC.wl *)
 $currentFileName = If[$InputFileName=="", NotebookFileName[], $InputFileName];
 $currentDir = DirectoryName[$currentFileName];
 Needs["xAct`xTras`", FileNameJoin[{ParentDirectory[$currentDir],"xActToC.wl"}]];
+
 
 (* ====================== *)
 (* Set manifold and chart *)
@@ -51,6 +55,16 @@ IndexSet[RHSOf[vU][i_], euclid[i,k]MDD[-k,-j]uU[j]];
 IndexSet[RHSOf[rU,"Msqr"][i_], euclid[i,k]MDD[-k,-j]vU[j]];
 IndexSet[RHSOf[rU,"otherwise"][i_], vU[i]];
 
+(* set components *)
+Print["Setting components ..."];
+ManipulateVarlist["set components: independent varlist index",
+                  dtEvolVarlist, cartesian, "[[ijk]]"];
+ManipulateVarlist["set components: independent varlist index",
+                  EvolVarlist, cartesian, "[[ijk]]"];
+ManipulateVarlist["set components: independent varlist index",
+                  MoreInputVarlist, cartesian, "[[ijk]]"];
+ManipulateVarlist["set components: for temporary varlist",
+                  TempVarlist, cartesian, "[[ijk]]"];
 
 (* ============== *)
 (* Write to files *)
@@ -88,22 +102,11 @@ $headPart[] := Module[{},
   pr[];
   pr["forpoints(node, ijk)"];
   pr["{"];
-  pr["int iMDD = Ind(\"ADM_gxx\");"]
+  pr["int iMDD = Ind(\"ADM_gxx\");"];
+  pr[];
 ];
 
 $bodyPart[] := Module[{},
-  (* set components *)
-  Print["Setting components ..."];
-  ManipulateVarlist["set components: independent varlist index",
-                    dtEvolVarlist, cartesian, "[[ijk]]"];
-  ManipulateVarlist["set components: independent varlist index",
-                    EvolVarlist, cartesian, "[[ijk]]"];
-  ManipulateVarlist["set components: independent varlist index",
-                    MoreInputVarlist, cartesian, "[[ijk]]"];
-  ManipulateVarlist["set components: for temporary varlist",
-                    TempVarlist, cartesian, "[[ijk]]"];
-  pr[];
-
   (* print initializations *)
   Print["Printing components ..."];
   ManipulateVarlist["print components initialization: vlr",
@@ -115,7 +118,6 @@ $bodyPart[] := Module[{},
   ManipulateVarlist["print components equation: temporary",
                     TempVarlist, cartesian, "[[ijk]]"];
   pr[];
-
   (* print equations *)
   Print["Printing components ..."];
   pr["if(Msqr)"];
@@ -128,15 +130,15 @@ $bodyPart[] := Module[{},
   ManipulateVarlist["print components equation: primary with suffix",
                     dtEvolVarlist, cartesian, "otherwise"];
   pr["}"];
-  pr[]
+  pr[];
 ];
 
 $endPart[] := Module[{},
    pr["} /* end of points */"];
    pr["} /* end of nodes */"];
-   pr["}"]
+   pr["}"];
 ];
 
 (* << ../Codes/Nmesh.wl *)
-Import[FileNameJoin[{ParentDirectory[$currentDir], "Codes/Nmesh.wl"}]]
+Import[FileNameJoin[{ParentDirectory[$currentDir], "Codes/Nmesh.wl"}]];
 
