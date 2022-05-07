@@ -6,8 +6,8 @@
 
 
 (* << ../xActToC.wl *)
-$currentDir = If[$InputFileName=="", NotebookDirectory[],
-                                     DirectoryName[$InputFileName]];
+$currentFileName = If[$InputFileName=="", NotebookFileName[], $InputFileName];
+$currentDir = DirectoryName[$currentFileName];
 Needs["xAct`xTras`", FileNameJoin[{ParentDirectory[$currentDir],"xActToC.wl"}]];
 
 (* ====================== *)
@@ -55,7 +55,7 @@ IndexSet[RHSOf[rU,"otherwise"][i_], vU[i]];
 (* ============== *)
 (* Write to files *)
 (* ============== *)
-$outputFile = "test.c";
+$outputFile = FileBaseName[FileNameTake[$currentFileName]]<>".c";
 $projectName = "C3GH";
 
 $headPart[] := Module[{},
@@ -103,7 +103,6 @@ $bodyPart[] := Module[{},
   ManipulateVarlist["set components: for temporary varlist",
                     TempVarlist, cartesian, "[[ijk]]"];
   pr[];
-  Print["Done"];
 
   (* print initializations *)
   Print["Printing components ..."];
@@ -116,7 +115,6 @@ $bodyPart[] := Module[{},
   ManipulateVarlist["print components equation: temporary",
                     TempVarlist, cartesian, "[[ijk]]"];
   pr[];
-  Print["Done"];
 
   (* print equations *)
   Print["Printing components ..."];
@@ -131,7 +129,6 @@ $bodyPart[] := Module[{},
                     dtEvolVarlist, cartesian, "otherwise"];
   pr["}"];
   pr[]
-  Print["Done"];
 ]
 
 $endPart[] := Module[{},

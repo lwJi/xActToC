@@ -315,7 +315,7 @@ PrintComponentEquation[mode_, coordinate_, compName_, rhssName_, suffixName_] :=
     (* equations of temprary variables definition *)
     StringMatchQ[mode,"print components equation: temporary"],
     Module[{},
-      pr["double "];
+      pr["double"];
       PutAppend[CForm[compToValue],$outputFile]; pr["="];
       PutAppend[CForm[rhssToValue],$outputFile]; pr[";\n"];
     ],
@@ -341,7 +341,7 @@ PrintComponentEquation[mode_, coordinate_, compName_, rhssName_, suffixName_] :=
     (* equations flux construction *)
     StringMatchQ[mode,"print components equation: primary for flux"],
     Module[{},
-      pr["double "];
+      pr["double"];
       PutAppend[CForm[compToValue],$outputFile]; pr["="];
       PutAppend[CForm[rhssToValue],$outputFile]; pr[";\n"];
     ],

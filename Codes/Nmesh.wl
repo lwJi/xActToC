@@ -67,7 +67,10 @@ getInitialComp[varName_] := Module[
 Print["============================================================"];
 Print[" Writing to ", $outputFile];
 Print["============================================================"];
-If[FileExistsQ[$outputFile], DeleteFile[$outputFile]];
+If[FileExistsQ[$outputFile],
+  Print[$outputFile, " already exist, replacing it ..."];
+  DeleteFile[$outputFile]
+];
 filePointer = OpenAppend[$outputFile];
 (* define pr *)
 pr[x_:""] := Module[{}, WriteLine[filePointer, x]];
@@ -83,4 +86,5 @@ $bodyPart[];
 
 $endPart[];
 
+Print["Done generating ", $outputFile, "\n"];
 Close[filePointer];

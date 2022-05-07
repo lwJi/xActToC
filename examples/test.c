@@ -45,19 +45,19 @@ double *MDD13 = Vard(node, iMDDxx+2);
 double *MDD22 = Vard(node, iMDDxx+3);
 double *MDD23 = Vard(node, iMDDxx+4);
 double *MDD33 = Vard(node, iMDDxx+5);
-double 
+double
 vU1
 =
 MDD11[ijk]*uU1[ijk] + MDD12[ijk]*uU2[ijk] + MDD13[ijk]*uU3[ijk]
 ;
 
-double 
+double
 vU2
 =
 MDD12[ijk]*uU1[ijk] + MDD22[ijk]*uU2[ijk] + MDD23[ijk]*uU3[ijk]
 ;
 
-double 
+double
 vU3
 =
 MDD13[ijk]*uU1[ijk] + MDD23[ijk]*uU2[ijk] + MDD33[ijk]*uU3[ijk]
