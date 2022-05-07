@@ -17,13 +17,3 @@
 
 << ManipulateVarlist.wl
 
-(*
-
-<< misctools.wl
-
-<< definetensor.wl
-
-<< componenttools.wl
-
-<< manipulatemodes.wl
-*)
