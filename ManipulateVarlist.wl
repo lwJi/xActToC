@@ -19,10 +19,10 @@ ManipulateVarlist[mode_?StringQ, varlist_?ListQ, coordinate_, gridPointIndex_?St
     manipulateComponentValue
   },
   (* set global parameters *)
-  $Bool$NewVarlist = True;
-  $Bool$PrintVerbose = printVerbose;
+  $bool$NewVarlist = True;
+  $bool$PrintVerbose = printVerbose;
   (* set temp parameters *)
-  If[$Dim==3, iMin = 1, iMin = 0];
+  If[$dim==3, iMin = 1, iMin = 0];
 
   (* loop over varlist in the list *)
   Do[
@@ -43,7 +43,7 @@ ManipulateVarlist[mode_?StringQ, varlist_?ListQ, coordinate_, gridPointIndex_?St
         Message[ManipulateVarlist::ErrorTensorNonExist, iVar, varName, varlist]; Abort[]
       ],
       (* tensor exist *)
-      If[!MemberQ[$Map$ComponentToVarlist[[All, 1, 0]], varName[[0]]], (* if tensor name is outside the global varlist *)
+      If[!MemberQ[$map$ComponentToVarlist[[All, 1, 0]], varName[[0]]], (* if tensor name is outside the global varlist *)
         Message[ManipulateVarlist::ErrorTensorExistOutside, iVar, varName, varlist]; Abort[]
       ]
     ];
@@ -183,7 +183,7 @@ ManipulateComponent[compIndexList_, mode_, coordinate_, varName_, gridPointIndex
     exprName
   },
   (* set names *)
-  {compName,rhssName,exprName} = SetNameArray[compIndexList, coordinate, varName, gridPointIndex];
+  {compName,rhssName,exprName} = SetNameArray[compIndexList, mode, coordinate, varName, gridPointIndex];
   (* find out 4D component (0-compopnent here) of a 3D tensor, which should be skipped *)
   If[is4DCompIndexIn3DTensor[compIndexList,varName],
     (* set those 'up' 0-component to 0 for a 3D tensor *)
@@ -206,7 +206,7 @@ ManipulateComponent[compIndexList_, mode_, coordinate_, varName_, gridPointIndex
 ManipulateComponent::ErrorMode = "Manipulate mode \"`1`\" undefined !";
 
 (* set name of component, rhs of component and component value *)
-SetNameArray[compIndexList_, coordinate_, varName_, gridPointIndex_] := Module[
+SetNameArray[compIndexList_, mode_, coordinate_, varName_, gridPointIndex_] := Module[
   {
     coordFull, (* consider covariant or contravariant *)
     compName,  (* component expr in Mathematica kernal, say Pi[{1,-cart},{2,-cart}] *)
@@ -216,7 +216,7 @@ SetNameArray[compIndexList_, coordinate_, varName_, gridPointIndex_] := Module[
   (* initialize *)
   compName = varName[[0]][];
   rhssName = RHSOf[varName[[0]]][];
-  exprName = StringTrim[ToString[varName[[0]]], $Suffix$Unprotected];
+  exprName = StringTrim[ToString[varName[[0]]], $suffix$Unprotected];
   (* if not scalar *)
   If[Length[compIndexList]>0,
     Do[
@@ -227,7 +227,10 @@ SetNameArray[compIndexList_, coordinate_, varName_, gridPointIndex_] := Module[
       exprName = exprName<>ToString@compIndexList[[compIndex]],
     {compIndex, 1, Length[compIndexList]}]
   ];
-  exprName=ToExpression[exprName<>gridPointIndex];
+  If[StringMatchQ[mode, "set components using independent var index for temporary var"],
+    exprName=ToExpression[exprName],
+    exprName=ToExpression[exprName<>gridPointIndex]
+  ];
   (* return NameArray *)
   {compName, rhssName, exprName}
 ];
@@ -262,7 +265,7 @@ SetComponentAndIndexMap[mode_, compName_, exprName_] := Module[
   {
     varlistIndex
   },
-  (* set global map: $Map$ComponentToVarlist
+  (* set global map: $map$ComponentToVarlist
        case1 (start at 'new local varlist', in this case, people should pay attention when they define varlist)
          {a00 a01 ... b00 b01 ...}, {e00 e01 ... f00 f01 ...}, ...
            0   1  ... ... ... ...     0   1  ... ... ... ...   ...
@@ -270,20 +273,20 @@ SetComponentAndIndexMap[mode_, compName_, exprName_] := Module[
          {a00 a01 ... b00 b01 ...}, {e00 e01 ... f00 f01 ...}, ...
            0   1  ...  0   1  ...     0   1  ...  0   1  ...   ...
   *)
-  If[Length[$Map$ComponentToVarlist]==0 || (* global varlist is empty *)
-     $Bool$NewVarlist ||                   (* new local varlist start *)
-     (StringMatchQ[mode, "set components using independent var index"] && (compName[[0]]=!=Last[$Map$ComponentToVarlist][[1,0]])), (* new var in local varlist *)
+  If[Length[$map$ComponentToVarlist]==0 || (* global varlist is empty *)
+     $bool$NewVarlist ||                   (* new local varlist start *)
+     (StringMatchQ[mode, "set components using independent var index*"] && (compName[[0]]=!=Last[$map$ComponentToVarlist][[1,0]])), (* new var in local varlist *)
     varlistIndex = -1,
-    varlistIndex = Last[$Map$ComponentToVarlist][[2]]
+    varlistIndex = Last[$map$ComponentToVarlist][[2]]
   ];
   varlistIndex = varlistIndex+1;
   (* set components and add to global map *)
   ComponentValue[compName, exprName];
-  If[MemberQ[$Map$ComponentToVarlist[[All, 1]], compName], (* if tensor component is already exist *)
+  If[MemberQ[$map$ComponentToVarlist[[All, 1]], compName], (* if tensor component is already exist *)
     PrintVerbose["Skip adding Component ", compName, " to Global VarList, since it already exist"],
-    AppendTo[$Map$ComponentToVarlist, {compName, varlistIndex}]; PrintVerbose["Add Component ", compName, " to Global VarList"]
+    AppendTo[$map$ComponentToVarlist, {compName, varlistIndex}]; PrintVerbose["Add Component ", compName, " to Global VarList"]
   ];
-  $Bool$NewVarlist = False
+  $bool$NewVarlist = False
 ];
 
 PrintComponent[mode_, coordinate_, varName_, compName_, rhssName_, gridPointIndex_] := Module[
@@ -313,34 +316,34 @@ PrintComponentEquation[mode_, coordinate_, compName_, rhssName_, suffixName_] :=
     StringMatchQ[mode,"print components equation: temporary"],
     Module[{},
       pr["double "];
-      PutAppend[CForm[compToValue],$outputFile]; pr["=\n"];
-      PutAppend[CForm[rhssToValue],$outputFile]; pr[";\n\n"];
+      PutAppend[CForm[compToValue],$outputFile]; pr["="];
+      PutAppend[CForm[rhssToValue],$outputFile]; pr[";\n"];
     ],
     (* equations of primary output variables *)
     StringMatchQ[mode,"print components equation: primary"],
     Module[{},
-      PutAppend[CForm[compToValue],$outputFile]; pr["=\n"];
-      PutAppend[CForm[rhssToValue],$outputFile]; pr[";\n\n"];
+      PutAppend[CForm[compToValue],$outputFile]; pr["="];
+      PutAppend[CForm[rhssToValue],$outputFile]; pr[";\n"];
     ],
     (* equations of primary output variables with suffix, say "dtPinn$fromdtK", where suffixName='fromdtK' *)
     StringMatchQ[mode,"print components equation: primary with suffix"],
     Module[{},
       rhssToValue = (rhssName/.{rhssName[[0]]->ToExpression[ToString[rhssName[[0]]]<>"$"<>suffixName]})//DummyToBasis[coordinate]//TraceBasisDummy//ToValues//Simplify;
-      PutAppend[CForm[compToValue],$outputFile]; pr["=\n"];
-      PutAppend[CForm[rhssToValue],$outputFile]; pr[";\n\n"];
+      PutAppend[CForm[compToValue],$outputFile]; pr["="];
+      PutAppend[CForm[rhssToValue],$outputFile]; pr[";\n"];
     ],
     (* equations of adding more terms to primary variables, say add matter terms to dt_U *)
     StringMatchQ[mode,"print components equation: adding to primary"],
     Module[{},
-      PutAppend[CForm[compToValue],$outputFile]; pr["+=\n"];
-      PutAppend[CForm[rhssToValue],$outputFile]; pr[";\n\n"]
+      PutAppend[CForm[compToValue],$outputFile]; pr["+="];
+      PutAppend[CForm[rhssToValue],$outputFile]; pr[";\n"]
     ],
     (* equations flux construction *)
     StringMatchQ[mode,"print components equation: primary for flux"],
     Module[{},
       pr["double "];
-      PutAppend[CForm[compToValue],$outputFile]; pr["=\n"];
-      PutAppend[CForm[rhssToValue],$outputFile]; pr[";\n\n"];
+      PutAppend[CForm[compToValue],$outputFile]; pr["="];
+      PutAppend[CForm[rhssToValue],$outputFile]; pr[";\n"];
     ],
     (* mode undefined *)
     True,

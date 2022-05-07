@@ -98,8 +98,9 @@ $bodyPart[] := Module[{},
                     EvolVarlist, cartesian, "[[ijk]]"];
   ManipulateVarlist["set components using independent var index",
                     MoreInputVarlist, cartesian, "[[ijk]]"];
-  ManipulateVarlist["set components using independent var index",
+  ManipulateVarlist["set components using independent var index for temporary var",
                     TempVarlist, cartesian, "[[ijk]]"];
+  pr[];
   Print["Done"];
 
   (* print initializations *)
@@ -110,7 +111,7 @@ $bodyPart[] := Module[{},
                     EvolVarlist, cartesian, "[[ijk]]"];
   ManipulateVarlist["print components initialization: more input",
                     MoreInputVarlist, cartesian, "[[ijk]]"];
-  ManipulateVarlist["print components initialization: temporary",
+  ManipulateVarlist["print components equation: temporary",
                     TempVarlist, cartesian, "[[ijk]]"];
   pr[];
   Print["Done"];

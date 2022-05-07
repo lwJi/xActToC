@@ -35,10 +35,10 @@ FluxOf[flux_?StringQ, varlist_?ListQ] := Module[
   fluxOfVarlist = varlist/.replaceRules
 ];
 
-(* print which depend on value of $Bool$PrintVerbose *)
+(* print which depend on value of $bool$PrintVerbose *)
 PrintVerbose[var__] := Module[
   {},
-  If[$Bool$PrintVerbose, Print[var]]
+  If[$bool$PrintVerbose, Print[var]]
 ];
 
 (* check if the current component is the 4D component (0-comp) of a 3D tensor (abstract index) *)

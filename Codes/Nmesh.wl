@@ -11,7 +11,7 @@
 (* =============== *)
 PrintComponentInitialization[mode_, coordinate_, varName_, compName_, gridPointIndex_] := Module[
   {
-    varlistIndex = $Map$ComponentToVarlist[[Position[$Map$ComponentToVarlist,compName][[1,1]], 2]],
+    varlistIndex = $map$ComponentToVarlist[[Position[$map$ComponentToVarlist,compName][[1,1]], 2]],
     compToValue = compName//ToValues,
     buf
   },
@@ -26,11 +26,11 @@ PrintComponentInitialization[mode_, coordinate_, varName_, compName_, gridPointI
     (* print output var initialization using varlist index*)
     StringMatchQ[mode,"print components initialization: vlr using vlpush_index"],
     buf="double *"<>StringTrim[ToString[compToValue],gridPointIndex]<>" = Vard(node, Vind(vlr,"<>ToString[$projectName]<>"->i_"
-      <>StringTrim[ToString[varName[[0]]],("dt"|$Suffix$Unprotected)]<>getInitialComp[varName]<>If[varlistIndex==0,"","+"<>ToString[varlistIndex]]<>"));",
+      <>StringTrim[ToString[varName[[0]]],("dt"|$suffix$Unprotected)]<>getInitialComp[varName]<>If[varlistIndex==0,"","+"<>ToString[varlistIndex]]<>"));",
     (* print input var initialization using varlist index*)
     StringMatchQ[mode,"print components initialization: vlu using vlpush_index*"],
     buf="double *"<>StringTrim[ToString[compToValue],gridPointIndex]<>" = Vard(node, Vind(vlu,"<>ToString[$projectName]<>"->i_"
-      <>StringTrim[ToString[varName[[0]]],$Suffix$Unprotected]<>getInitialComp[varName]<>If[varlistIndex==0,"","+"<>ToString[varlistIndex]]<>"));",
+      <>StringTrim[ToString[varName[[0]]],$suffix$Unprotected]<>getInitialComp[varName]<>If[varlistIndex==0,"","+"<>ToString[varlistIndex]]<>"));",
     (* print more input var initialization *)
     StringMatchQ[mode,"print components initialization: more input"],
     buf="double *"<>StringTrim[ToString[compToValue],gridPointIndex]<>" = Vard(node, i"<>ToString[varName[[0]]]<>getInitialComp[varName]

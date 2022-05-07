@@ -41,18 +41,18 @@ $AccelerationSign = -1;
 (* Initialize global vars *)
 (**************************)
 (* dimension *)
-$Dim = 0;
+$dim = 0;
 
 (* store map between components and varlist indexes *)
-$Map$ComponentToVarlist = {};
+$map$ComponentToVarlist = {};
 
 (* flag if creat new varlist *)
-$Bool$NewVarlist = True;
+$bool$NewVarlist = True;
 (* flag if print verbose information *)
-$Bool$PrintVerbose = False;
+$bool$PrintVerbose = False;
 
 (* suffix to be added to vars, which would conflict with system default vars otherwise *)
-$Suffix$Unprotected = "$Upt";
+$suffix$Unprotected = "$Upt";
 
 (* file name and project name *)
 $outputFile = "output.c";

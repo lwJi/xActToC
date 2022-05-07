@@ -24,19 +24,19 @@ SetManifoldAndChart[dimension_, coordinateName_, OptionsPattern[]] := Module[
     tensorIRange = OptionValue[tensorIndexRange]
   },
   (* set global var *)
-  $Dim = dimension;
+  $dim = dimension;
   (* consider different dimension cases *)
-  Switch[$Dim,
+  Switch[$dim,
     3,
     If[Length[coordArray]==0, coordArray = {X[],Y[],Z[]}];
-    DefManifold[$Manifd, $Dim, tensorIRange];
+    DefManifold[$Manifd, $dim, tensorIRange];
     DefChart[coordinateName, $Manifd, {1,2,3}, coordArray, ChartColor->RGBColor[0,1,0]],
     4,
     If[Length[coordArray]==0, coordArray = {T[],X[],Y[],Z[]}];
-    DefManifold[$Manifd, $Dim, tensorIRange];
+    DefManifold[$Manifd, $dim, tensorIRange];
     DefChart[coordinateName, $Manifd, {0,1,2,3}, coordArray, ChartColor->RGBColor[0,0,1]],
     _,
-    Message[SetManifoldAndChart::ErrorDim, $Dim]; Abort[]
+    Message[SetManifoldAndChart::ErrorDim, $dim]; Abort[]
   ]
 ];
 SetManifoldAndChart::ErrorDim = "Dimension `1` not supported yet !";
