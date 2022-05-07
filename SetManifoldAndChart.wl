@@ -5,10 +5,9 @@
 *)
 
 
-(* defaut index conventions:
-    In the 4D case, we use
-    a,b,c,...,h,h1,h2,...,h9 as abstract index for 4D tensor,
-    i,j,k,...,z,z1,z2,...,z9 as abstract index for 3D tensor.
+(* defaut index conventions: in the 4D case, we use
+     a,b,c,...,h,h1,h2,...,h9 as abstract index for 4D tensor,
+     i,j,k,...,z,z1,z2,...,z9 as abstract index for 3D tensor.
 *)
 Options[SetManifoldAndChart] = {
   coordinateArray -> {},
@@ -37,6 +36,6 @@ SetManifoldAndChart[dimension_, coordinateName_, OptionsPattern[]] := Module[
     DefChart[coordinateName, $Manifd, {0,1,2,3}, coordArray, ChartColor->RGBColor[0,0,1]],
     _,
     Message[SetManifoldAndChart::ErrorDim, $dim]; Abort[]
-  ]
+  ];
 ];
 SetManifoldAndChart::ErrorDim = "Dimension `1` not supported yet !";
