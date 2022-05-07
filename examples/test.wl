@@ -57,14 +57,10 @@ IndexSet[RHSOf[rU,"otherwise"][i_], vU[i]];
 
 (* set components *)
 Print["Setting components ..."];
-ManipulateVarlist["set components: independent varlist index",
-                  dtEvolVarlist, cartesian, "[[ijk]]"];
-ManipulateVarlist["set components: independent varlist index",
-                  EvolVarlist, cartesian, "[[ijk]]"];
-ManipulateVarlist["set components: independent varlist index",
-                  MoreInputVarlist, cartesian, "[[ijk]]"];
-ManipulateVarlist["set components: for temporary varlist",
-                  TempVarlist, cartesian, "[[ijk]]"];
+ManipulateVarlist["set components: independent varlist index", dtEvolVarlist, cartesian, "[[ijk]]"];
+ManipulateVarlist["set components: independent varlist index", EvolVarlist, cartesian, "[[ijk]]"];
+ManipulateVarlist["set components: independent varlist index", MoreInputVarlist, cartesian, "[[ijk]]"];
+ManipulateVarlist["set components: for temporary varlist", TempVarlist, cartesian, "[[ijk]]"];
 
 (* ============== *)
 (* Write to files *)
@@ -109,26 +105,20 @@ $headPart[] := Module[{},
 $bodyPart[] := Module[{},
   (* print initializations *)
   Print["Printing components ..."];
-  ManipulateVarlist["print components initialization: vlr",
-                    dtEvolVarlist, cartesian, "[[ijk]]"];
-  ManipulateVarlist["print components initialization: vlu",
-                    EvolVarlist, cartesian, "[[ijk]]"];
-  ManipulateVarlist["print components initialization: more input",
-                    MoreInputVarlist, cartesian, "[[ijk]]"];
-  ManipulateVarlist["print components equation: temporary",
-                    TempVarlist, cartesian, "[[ijk]]"];
+  ManipulateVarlist["print components initialization: vlr", dtEvolVarlist, cartesian, "[[ijk]]"];
+  ManipulateVarlist["print components initialization: vlu", EvolVarlist, cartesian, "[[ijk]]"];
+  ManipulateVarlist["print components initialization: more input", MoreInputVarlist, cartesian, "[[ijk]]"];
+  ManipulateVarlist["print components equation: temporary", TempVarlist, cartesian, "[[ijk]]"];
   pr[];
   (* print equations *)
   Print["Printing components ..."];
   pr["if(Msqr)"];
   pr["{"];
-  ManipulateVarlist["print components equation: primary with suffix",
-                    dtEvolVarlist, cartesian, "Msqr"];
+  ManipulateVarlist["print components equation: primary with suffix", dtEvolVarlist, cartesian, "Msqr"];
   pr["}"];
   pr["else"];
   pr["{"];
-  ManipulateVarlist["print components equation: primary with suffix",
-                    dtEvolVarlist, cartesian, "otherwise"];
+  ManipulateVarlist["print components equation: primary with suffix", dtEvolVarlist, cartesian, "otherwise"];
   pr["}"];
   pr[];
 ];

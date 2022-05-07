@@ -7,11 +7,11 @@
 * Run with
 
 ```shell
-../xActToc/generateC.sh *.wl
+xActToC-2.0/GenerateC.sh *.wl
 ```
 to generate the corresponing C files.
 
-* You can also generate C files one by one using command
+* Or you can also generate C files one by one using command
 
 ```shell
 wolframscript -f file.wl
@@ -20,14 +20,23 @@ wolframscript -f file.wl
 then run
 
 ```shell
-../xActToC/removetrailingspaces.sh *.c
+xActToC-2.0/RemoveTrailingSpaces.sh *.c
 ```
 
 to remove the trailing spaces in all these files.
 
-## Different Modes
+## Prepare `.wl` Files for Your Own Codes
 
-* `set components*`
+### Recipe for your own Codes and Projects
+
+1. Add a module specific to your **codes** into directory `Codes`. (Please see `Codes\Nmesh` as an example.)
+
+
+2. Add a `.wl` file specific to your **projects** consistent with the above module (please see `example/test.wl` as an example):
+
+### Options for `mode` in function `ManipulateVarlist[mode, varlist, coordinate, gridPointIndex]`
+
+* `"set components*"`: set components for each tensor (say `metricg[{1,-coordinate},{1,-coordinate}] = gDD11[[ijk]]`)
 
     * `set components: for temporary varlist`
 
