@@ -50,7 +50,11 @@ $bool$NewVarlist = True;
 $bool$PrintVerbose = False;
 (* suffix to be added to vars, which would conflict with system default vars otherwise *)
 $suffix$Unprotected = "$Upt";
+(* suffix name *)
+$suffixName = "";
 (* file name and project name *)
 $outputFile = "output.c";
 $projectName = "TEST";
+(* grid point index name *)
+$gridPointIndex = "";
 
