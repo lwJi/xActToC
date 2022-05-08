@@ -40,21 +40,22 @@ $AccelerationSign = -1;
 (**************************)
 (* Initialize global vars *)
 (**************************)
-(* dimension *)
+(* dimension and default coordinate name, which will be set in SetManifoldAndChart *)
 $dim = 0;
+$defaultCoordinateName = Null;
 (* store map between components and varlist indexes *)
 $map$ComponentToVarlist = {};
-(* flag if creat new varlist *)
-$bool$NewVarlist = True;
-(* flag if print verbose information *)
-$bool$PrintVerbose = False;
 (* suffix to be added to vars, which would conflict with system default vars otherwise *)
 $suffix$Unprotected = "$Upt";
-(* suffix name *)
+(* flag if creat new varlist and if print verbose information, which are updated in ManipulateVarlist *)
+$bool$NewVarlist = True;
+$bool$PrintVerbose = False;
+(* suffix name, for if statement in the equations, which should be update by user through ManipulateVarlist *)
 $suffixName = "";
+(* grid point index name, which should also be update by user directory or through ManipulateVarlist *)
+$gridPointIndex = "";
+
 (* file name and project name *)
 $outputFile = "output.c";
 $projectName = "TEST";
-(* grid point index name *)
-$gridPointIndex = "";
 

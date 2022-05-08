@@ -9,7 +9,7 @@
      a,b,c,...,h,h1,h2,...,h9 as abstract index for 4D tensor,
      i,j,k,...,z,z1,z2,...,z9 as abstract index for 3D tensor.
 *)
-Options[SetManifoldAndChart] = {
+Options[SetManifoldAndChart] := {
   coordinateArray -> {},
   tensorIndexRange -> Union[IndexRange[a,z], Table[ToExpression["h"<>ToString[i]],{i,1,9}], Table[ToExpression["z"<>ToString[i]],{i,1,9}]]
 };
@@ -19,21 +19,22 @@ Options[SetManifoldAndChart] = {
 *)
 SetManifoldAndChart[dimension_, coordinateName_, OptionsPattern[]] := Module[
   {
-    coordArray = OptionValue[coordinateArray],
-    tensorIRange = OptionValue[tensorIndexRange]
+    coordinateArrayValue = OptionValue[coordinateArray],
+    tensorIndexRangeValue = OptionValue[tensorIndexRange]
   },
   (* set global var *)
   $dim = dimension;
+  $defaultCoordinateName = coordinateName;
   (* consider different dimension cases *)
   Switch[$dim,
     3,
-    If[Length[coordArray]==0, coordArray = {X[],Y[],Z[]}];
-    DefManifold[$Manifd, $dim, tensorIRange];
-    DefChart[coordinateName, $Manifd, {1,2,3}, coordArray, ChartColor->RGBColor[0,1,0]],
+    If[Length[coordinateArrayValue]==0, coordinateArrayValue = {X[],Y[],Z[]}];
+    DefManifold[$Manifd, $dim, tensorIndexRangeValue];
+    DefChart[$defaultCoordinateName, $Manifd, {1,2,3}, coordinateArrayValue, ChartColor->RGBColor[0,1,0]],
     4,
-    If[Length[coordArray]==0, coordArray = {T[],X[],Y[],Z[]}];
-    DefManifold[$Manifd, $dim, tensorIRange];
-    DefChart[coordinateName, $Manifd, {0,1,2,3}, coordArray, ChartColor->RGBColor[0,0,1]],
+    If[Length[coordinateArrayValue]==0, coordinateArrayValue = {T[],X[],Y[],Z[]}];
+    DefManifold[$Manifd, $dim, tensorIndexRangeValue];
+    DefChart[$defaultCoordinateName, $Manifd, {0,1,2,3}, coordinateArrayValue, ChartColor->RGBColor[0,0,1]],
     _,
     Message[SetManifoldAndChart::ErrorDim, $dim]; Abort[]
   ];

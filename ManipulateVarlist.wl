@@ -5,16 +5,18 @@
 *)
 
 (* default value for gridPointIndex, suffixName and printVerbose *)
-Options[ManipulateVarlist] = {
-  coordinate -> $defaultCoordinate,
-  gridpointindex -> $gridPointIndex,
-  suffixName -> "",
-  printVerbose -> False
+Options[ManipulateVarlist] := {
+  coordinate -> $defaultCoordinateName,
+  gridPointIndex -> $gridPointIndex,
+  suffixName -> $suffixName,
+  printVerbose -> $bool$PrintVerbose
 };
 (* main function which handle different num of index cases *)
-ManipulateVarlist[mode_?StringQ, varlist_?ListQ, coordinate_, OptionsPattern[]] := Module[
+ManipulateVarlist[mode_?StringQ, varlist_?ListQ, OptionsPattern[]] := Module[
   {
-    gridPointIndex = OptionValue[gridpointindex],
+    coordinateValue = OptionValue[coordinate],
+    gridPointIndexValue = OptionValue[gridPointIndex],
+    suffixNameValue = OptionValue[suffixName],
     iMin,
     iMax = 3,
     var,
@@ -25,10 +27,11 @@ ManipulateVarlist[mode_?StringQ, varlist_?ListQ, coordinate_, OptionsPattern[]] 
     varSymmetryIndex,
     manipulateComponentValue
   },
+  (* check Null *)
+  If[coordinateValue==Null, Message[ManipulateVarlist::ErrorNullCoordinate];Abort[]];
   (* set global parameters *)
   $bool$NewVarlist = True;
   $bool$PrintVerbose = OptionValue[printVerbose];
-  If[StringLength[OptionValue[suffixName]]>0, $suffixName = OptionValue[suffixName]];
   (* set temp parameters *)
   If[$dim==3, iMin = 1, iMin = 0];
 
@@ -52,7 +55,7 @@ ManipulateVarlist[mode_?StringQ, varlist_?ListQ, coordinate_, OptionsPattern[]] 
       ]
     ];
     (* set temp function *)
-    manipulateComponentValue[compIndexList_] := ManipulateComponent[compIndexList, mode, coordinate, varName, gridPointIndex];
+    manipulateComponentValue[compIndexList_] := ManipulateComponent[compIndexList, mode, coordinateValue, varName, gridPointIndexValue, suffixNameValue];
 
     (* consider different types of tensor *)
     Switch[Length[varName],
@@ -74,7 +77,7 @@ ManipulateVarlist[mode_?StringQ, varlist_?ListQ, coordinate_, OptionsPattern[]] 
           _,
           Message[ManipulateVarlist::ErrorSymmetryType, iVar, varName, varlist]; Abort[]
         ];
-        varName//ToBasis[coordinate]//ComponentArray//ComponentValue,
+        varName//ToBasis[coordinateValue]//ComponentArray//ComponentValue,
         (* Without Symmetry *)
         Do[manipulateComponentValue[{ia,ib}], {ia,iMin,iMax},{ib,iMin,iMax}]
       ],
@@ -107,7 +110,7 @@ ManipulateVarlist[mode_?StringQ, varlist_?ListQ, coordinate_, OptionsPattern[]] 
           True,
           Message[ManipulateVarlist::ErrorSymmetryType, iVar, varName, varlist]; Abort[]
         ]; (* end of Which *)
-        varName//ToBasis[coordinate]//ComponentArray//ComponentValue,
+        varName//ToBasis[coordinateValue]//ComponentArray//ComponentValue,
         (* Without Symmetry *)
         Do[manipulateComponentValue[{ic,ia,ib}], {ic,iMin,iMax},{ia,iMin,iMax},{ib,iMin,iMax}]
       ],
@@ -138,7 +141,7 @@ ManipulateVarlist[mode_?StringQ, varlist_?ListQ, coordinate_, OptionsPattern[]] 
           True,
           Message[ManipulateVarlist::ErrorSymmetryType, iVar, varName, varlist]; Abort[]
         ]; (* end of Which *)
-        varName//ToBasis[coordinate]//ComponentArray//ComponentValue,
+        varName//ToBasis[coordinateValue]//ComponentArray//ComponentValue,
         (* Without Symmetry *)
         Do[manipulateComponentValue[{ic,id,ia,ib}], {ic,iMin,iMax},{id,iMin,iMax},{ia,iMin,iMax},{ib,iMin,iMax}]
       ],
@@ -152,12 +155,13 @@ ManipulateVarlist::ErrorTensorNonExist = "Tensor of the `1`-th var, `2`, in varl
 ManipulateVarlist::ErrorTensorExistOutside = "Tensor of the `1`-th var, `2`, in varlist `3` already exsit outside the global varlist !";
 ManipulateVarlist::ErrorTensorType = "Tensor type of the `1`-th var, `2`, in varlist `3` unsupported yet !";
 ManipulateVarlist::ErrorSymmetryType = "Symmetry type of the `1`-th var, `2`, in varlist `3` unsupported yet !";
+ManipulateVarlist::ErrorNullCoordinate = "Coordinate is Null !";
 
 (* Maniputlate each component of a tensor:
      1. set tensor components,
      2. print tensor components or equations
 *)
-ManipulateComponent[compIndexList_, mode_, coordinate_, varName_, gridPointIndex_] := Module[
+ManipulateComponent[compIndexList_, mode_, coordinate_, varName_, gridPointIndex_, suffixName_] := Module[
   {
     compName,
     rhssName,
@@ -179,7 +183,7 @@ ManipulateComponent[compIndexList_, mode_, coordinate_, varName_, gridPointIndex
     SetComponentAndIndexMap[mode, compName, exprName]; PrintVerbose["Set Component ", compName, " for Tensor ", varName[[0]]],
     (* print componentes *)
     StringMatchQ[mode, "print components*"],
-    PrintComponent[mode, coordinate, varName, compName, rhssName, gridPointIndex]; PrintVerbose["Print Component ", compName, " to C-file"],
+    PrintComponent[mode, coordinate, varName, compName, rhssName, gridPointIndex, suffixName]; PrintVerbose["Print Component ", compName, " to C-file"],
     (* error mode *)
     True,
     Message[ManipulateComponent::ErrorMode, mode]; Abort[]
@@ -267,14 +271,14 @@ SetComponentAndIndexMap[mode_, compName_, exprName_] := Module[
   $bool$NewVarlist = False;
 ];
 
-PrintComponent[mode_, coordinate_, varName_, compName_, rhssName_, gridPointIndex_] := Module[{},
+PrintComponent[mode_, coordinate_, varName_, compName_, rhssName_, gridPointIndex_, suffixName_] := Module[{},
   Which[
     (* print var initialization *)
     StringMatchQ[mode, "print components initialization*"],
     PrintComponentInitialization[mode, varName, compName, gridPointIndex],
     (* print var equations *)
     StringMatchQ[mode, "print components equation*"],
-    PrintComponentEquation[mode, coordinate, compName, rhssName, $suffixName],
+    PrintComponentEquation[mode, coordinate, compName, rhssName, suffixName],
     (* mode undefined *)
     True,
     Message[PrintComponent::ErrorMode, mode]; Abort[]

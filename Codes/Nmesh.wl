@@ -65,6 +65,7 @@ Print["============================================================"];
 Print[" Writing to ", $outputFile];
 Print["============================================================"];
 If[FileExistsQ[$outputFile], Print[$outputFile, " already exist, replacing it ..."];DeleteFile[$outputFile]];
+Print[];
 
 (* define pr *)
 filePointer = OpenAppend[$outputFile];
