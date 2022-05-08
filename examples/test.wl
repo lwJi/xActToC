@@ -116,8 +116,8 @@ $bodyPart[] := Module[{},
   Print[" Printing components equation ...\n"];
   pr["if(Msqr)"];
   pr["{"];
-  (* ManipulateVarlist["set components: independent varlist index", dtEvolVarlist, {coordinate->cartesian, gridpointIndex->[[ijk]], suffixName->"Msqr"}]; *)
-  ManipulateVarlist["print components equation: primary with suffix", dtEvolVarlist, suffixName->"Msqr"];
+  ManipulateVarlist["print components equation: primary with suffix", dtEvolVarlist, {coordinate->cartesian, gridPointIndex->"[[ijk]]", suffixName->"Msqr"}];
+  (*ManipulateVarlist["print components equation: primary with suffix", dtEvolVarlist, suffixName->"Msqr"];*)
   pr["}"];
   pr["else"];
   pr["{"];
