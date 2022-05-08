@@ -17,10 +17,8 @@ Needs["xAct`xTras`", FileNameJoin[{ParentDirectory[$currentDir],"xActToC.wl"}]];
 (* ====================== *)
 (* Set manifold and chart *)
 (* ====================== *)
-(* $dim = 3 *)
-SetManifoldAndChart[3, cartesian];
-(* grid point index *)
-$gridPointIndex = "[[ijk]]";
+(* $dim = 3, grid point index = "[[ijk]]" *)
+SetManifoldAndChart[3, cartesian, "[[ijk]]"];
 
 (* more setup (not needed in most common cases) *)
 DefMetric[1, euclid[-i, -j], CD];

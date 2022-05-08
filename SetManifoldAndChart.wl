@@ -17,7 +17,7 @@ Options[SetManifoldAndChart] := {
      if need non-default value for coordinateArray/tensorIndexRange, please try
      SetManifoldAndChart[dimension_, coordinateName_, {coordinateArray->..., tensorIndexRange->...}];
 *)
-SetManifoldAndChart[dimension_, coordinateName_, OptionsPattern[]] := Module[
+SetManifoldAndChart[dimension_, coordinateName_, gridPointIndex_, OptionsPattern[]] := Module[
   {
     coordinateArrayValue = OptionValue[coordinateArray],
     tensorIndexRangeValue = OptionValue[tensorIndexRange]
@@ -25,6 +25,7 @@ SetManifoldAndChart[dimension_, coordinateName_, OptionsPattern[]] := Module[
   (* set global var *)
   $dim = dimension;
   $defaultCoordinateName = coordinateName;
+  $gridPointIndex = gridPointIndex;
   (* consider different dimension cases *)
   Switch[$dim,
     3,
