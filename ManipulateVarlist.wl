@@ -6,13 +6,15 @@
 
 (* default value for gridPointIndex, suffixName and printVerbose *)
 Options[ManipulateVarlist] = {
-  gridPointIndex -> "",
+  coordinate -> $defaultCoordinate,
+  gridpointindex -> $gridPointIndex,
   suffixName -> "",
   printVerbose -> False
 };
 (* main function which handle different num of index cases *)
 ManipulateVarlist[mode_?StringQ, varlist_?ListQ, coordinate_, OptionsPattern[]] := Module[
   {
+    gridPointIndex = OptionValue[gridpointindex],
     iMin,
     iMax = 3,
     var,
@@ -26,7 +28,6 @@ ManipulateVarlist[mode_?StringQ, varlist_?ListQ, coordinate_, OptionsPattern[]] 
   (* set global parameters *)
   $bool$NewVarlist = True;
   $bool$PrintVerbose = OptionValue[printVerbose];
-  If[StringLength[OptionValue[gridPointIndex]]>0, $gridPointIndex = OptionValue[gridPointIndex]];
   If[StringLength[OptionValue[suffixName]]>0, $suffixName = OptionValue[suffixName]];
   (* set temp parameters *)
   If[$dim==3, iMin = 1, iMin = 0];
@@ -51,7 +52,7 @@ ManipulateVarlist[mode_?StringQ, varlist_?ListQ, coordinate_, OptionsPattern[]] 
       ]
     ];
     (* set temp function *)
-    manipulateComponentValue[compIndexList_] := ManipulateComponent[compIndexList, mode, coordinate, varName];
+    manipulateComponentValue[compIndexList_] := ManipulateComponent[compIndexList, mode, coordinate, varName, gridPointIndex];
 
     (* consider different types of tensor *)
     Switch[Length[varName],
@@ -156,14 +157,14 @@ ManipulateVarlist::ErrorSymmetryType = "Symmetry type of the `1`-th var, `2`, in
      1. set tensor components,
      2. print tensor components or equations
 *)
-ManipulateComponent[compIndexList_, mode_, coordinate_, varName_] := Module[
+ManipulateComponent[compIndexList_, mode_, coordinate_, varName_, gridPointIndex_] := Module[
   {
     compName,
     rhssName,
     exprName
   },
   (* set names *)
-  {compName,rhssName,exprName} = SetNameArray[compIndexList, mode, coordinate, varName];
+  {compName,rhssName,exprName} = SetNameArray[compIndexList, mode, coordinate, varName, gridPointIndex];
   (* skip those 4D component (0-compopnent here) of a 3D tensor *)
   If[is4DCompIndexListIn3DTensor[compIndexList,varName],
     (* set those 'up' 0-component to 0 for a 3D tensor *)
@@ -178,7 +179,7 @@ ManipulateComponent[compIndexList_, mode_, coordinate_, varName_] := Module[
     SetComponentAndIndexMap[mode, compName, exprName]; PrintVerbose["Set Component ", compName, " for Tensor ", varName[[0]]],
     (* print componentes *)
     StringMatchQ[mode, "print components*"],
-    PrintComponent[mode, coordinate, varName, compName, rhssName]; PrintVerbose["Print Component ", compName, " to C-file"],
+    PrintComponent[mode, coordinate, varName, compName, rhssName, gridPointIndex]; PrintVerbose["Print Component ", compName, " to C-file"],
     (* error mode *)
     True,
     Message[ManipulateComponent::ErrorMode, mode]; Abort[]
@@ -187,7 +188,7 @@ ManipulateComponent[compIndexList_, mode_, coordinate_, varName_] := Module[
 ManipulateComponent::ErrorMode = "Manipulate mode \"`1`\" undefined !";
 
 (* return name array of component, rhs of component and component value *)
-SetNameArray[compIndexList_, mode_, coordinate_, varName_] := Module[
+SetNameArray[compIndexList_, mode_, coordinate_, varName_, gridPointIndex_] := Module[
   {
     coordFull, (* consider covariant or contravariant *)
     compName,  (* component expr in Mathematica kernal, say Pi[{1,-cart},{2,-cart}] *)
@@ -210,7 +211,7 @@ SetNameArray[compIndexList_, mode_, coordinate_, varName_] := Module[
   ];
   If[StringMatchQ[mode, "set components: for temporary varlist"],
     exprName=ToExpression[exprName],
-    exprName=ToExpression[exprName<>$gridPointIndex]
+    exprName=ToExpression[exprName<>gridPointIndex]
   ];
   (* return NameArray *)
   {compName, rhssName, exprName}
@@ -266,11 +267,11 @@ SetComponentAndIndexMap[mode_, compName_, exprName_] := Module[
   $bool$NewVarlist = False;
 ];
 
-PrintComponent[mode_, coordinate_, varName_, compName_, rhssName_] := Module[{},
+PrintComponent[mode_, coordinate_, varName_, compName_, rhssName_, gridPointIndex_] := Module[{},
   Which[
     (* print var initialization *)
     StringMatchQ[mode, "print components initialization*"],
-    PrintComponentInitialization[mode, varName, compName, $gridPointIndex],
+    PrintComponentInitialization[mode, varName, compName, gridPointIndex],
     (* print var equations *)
     StringMatchQ[mode, "print components equation*"],
     PrintComponentEquation[mode, coordinate, compName, rhssName, $suffixName],

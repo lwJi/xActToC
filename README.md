@@ -34,7 +34,7 @@ to remove the trailing spaces in all these files.
 
 2. Add a `.wl` file specific to your **projects** consistent with the above module (please see `example/test.wl` as an example):
 
-### Options for `mode` in function `ManipulateVarlist[mode, varlist, coordinate, gridPointIndex]`
+### Options for `mode` in function `ManipulateVarlist[mode, varlist, coordinate]`
 
 * `"set components*"`: set components for each tensor (say `metricg[{1,-coordinate},{1,-coordinate}] = gDD11[[ijk]]`)
 
