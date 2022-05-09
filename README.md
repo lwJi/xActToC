@@ -36,35 +36,35 @@ to remove the trailing spaces in all these files.
 
 ### Options for `mode` in function `ManipulateVarlist[mode, varlist]`
 
-* `"set components*"`: set components for each tensor which are grid point functions (say $g_{11}=\text{gDD11[ijk]}$)
+* `"set components*"`: set components for each tensor which are grid point functions (say <img src="https://render.githubusercontent.com/render/math?math=g_{11}">=`gDD11[ijk]`)
 
-    * `set components: for temporary varlist`: set components for each temporary tensor (say $g^{11}=\text{gUU11}$)
+    * `set components: for temporary varlist`: set components for each temporary tensor (say <img src="https://render.githubusercontent.com/render/math?math=g^{11}">=`gUU11`)
 
     * `set components: independent varlist index`: varlist index start from 0 for each tensor
 
 * `print components*`: print to C-file
 
-    * `print components initialization*`: set up pointers to each component (say $\text{gDD11}$) of tensors in the memory. It should be defined by user in the module under directory `Codes`, here we use `Nmesh` as an example
+    * `print components initialization*`: set up pointers to each component (say <img src="https://render.githubusercontent.com/render/math?math=g_{11}"> or `gDD11`) of tensors in the memory. It should be defined by user in the module under directory `Codes`, here we use `Nmesh` as an example
 
-        * `print components initializatoin: vlr`: say, set up pointer to $\dot{g_{11}}$ or $\text{dtgDD11}$
+        * `print components initializatoin: vlr`: say, set up pointer to <img src="https://render.githubusercontent.com/render/math?math=\dot{g_{11}}"> or `dtgDD11`
 
         * `print components initializatoin: vlr using vlpush_index`: using independent varlist index
 
-        * `print components initializatoin: vlu`: say, set up pointer to ${g_{11}}$ or $\text{gDD11}$
+        * `print components initializatoin: vlu`: say, set up pointer to <img src="https://render.githubusercontent.com/render/math?math=g_{11}"> or `gDD11`
 
         * `print components initializatoin: vlu using vlpush_index`: using independent varlist index
 
-        * `print components initializatoin: more input`: more grid functions in the rhs of the equations (other than evolution variables), say, set up pointer to $\partial_2g_{11}$ or $\text{dgDDD211}$
+        * `print components initializatoin: more input`: more grid functions in the rhs of the equations (other than evolution variables), say, set up pointer to <img src="https://render.githubusercontent.com/render/math?math=\partial_2g_{11}"> or `dgDDD211`
 
     * `print components equation*`
 
-        * `print components equation: temporary`: say, $g^{11} = ...$ 
+        * `print components equation: temporary`: say, <img src="https://render.githubusercontent.com/render/math?math=g_{11}">=... 
 
-        * `print components equation: primary`: say, $\dot{g}_{11} = ...$
+        * `print components equation: primary`: say, <img src="https://render.githubusercontent.com/render/math?math=\dot{g}_{11}">=...
 
-        * `print components equation: primary with suffix`: say, $\dot{\Pi}_{\mathbf{nn}}^{\text{fromdtK}}=...$, where `suffix` is $\text{fromdtK}$. Needed if the equation has `if` statement 
+        * `print components equation: primary with suffix`: say, <img src="https://render.githubusercontent.com/render/math?math=\dot{\Pi}_{\mathbf{nn}}^{\text{fromdtK}}">, where `suffix` is `fromdtK`. It is needed if the equation has `if` statement 
 
-        * `print components equation: adding to primary`: say, $\dot{\Pi}_{11} =  \dot{\Pi}_{11} + ...$ , or $\text{dtPiDD11 += ...}$, adding contribution from matter part
+        * `print components equation: adding to primary`: say, <img src="https://render.githubusercontent.com/render/math?math=\dot{\Pi}_{11}=\dot{\Pi}_{11}..."> , or `dtPiDD11 += ...`, adding contribution from matter part
 
 ## Tricks
 
