@@ -7,7 +7,7 @@
 * Run with
 
 ```shell
-xActToC-2.0/GenerateC.sh *.wl
+xActToC/GenerateC.sh *.wl
 ```
 to generate the corresponing C files.
 
@@ -20,7 +20,7 @@ wolframscript -f file.wl
 then run
 
 ```shell
-xActToC-2.0/RemoveTrailingSpaces.sh *.c
+xActToC/RemoveTrailingSpaces.sh *.c
 ```
 
 to remove the trailing spaces in all these files.
