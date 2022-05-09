@@ -25,9 +25,9 @@ xActToC-2.0/RemoveTrailingSpaces.sh *.c
 
 to remove the trailing spaces in all these files.
 
-## Prepare `.wl` Files for Your Own Codes
+## Prepare `.wl` files for your own codes
 
-### Recipe for your own Codes and Projects
+### Recipe for your own codes and projects
 
 1. Add a module specific to your **codes** into directory `Codes`. (Please see `Codes\Nmesh.wl` as an example.)
 
@@ -36,37 +36,35 @@ to remove the trailing spaces in all these files.
 
 ### Options for `mode` in function `ManipulateVarlist[mode, varlist]`
 
-* `"set components*"`: set components for each tensor (say `metricg[{1,-coordinate},{1,-coordinate}] = gDD11[[ijk]]`)
+* `"set components*"`: set components for each tensor which are grid point functions (say $g_{11}=\text{gDD11[ijk]}$)
 
-    * `set components: for temporary varlist`: (say `metricg[{1,-coordinate},{1,-coordinate}] = gDD11`)
+    * `set components: for temporary varlist`: set components for each temporary tensor (say $g^{11}=\text{gUU11}$)
 
     * `set components: independent varlist index`: varlist index start from 0 for each tensor
 
-* `print components*`: print to C file
+* `print components*`: print to C-file
 
-    * `print components initialization*`, which should be define by user, here we use `Nmesh` as an example
+    * `print components initialization*`: set up pointers to each component (say $\text{gDD11}$) of tensors in the memory. It should be defined by user in the module under directory `Codes`, here we use `Nmesh` as an example
 
-        * `print components initializatoin: vlr`
+        * `print components initializatoin: vlr`: say, set up pointer to $\dot{g_{11}}$ or $\text{dtgDD11}$
 
-        * `print components initializatoin: vlr using vlpush_index`
+        * `print components initializatoin: vlr using vlpush_index`: using independent varlist index
 
-        * `print components initializatoin: vlu`
+        * `print components initializatoin: vlu`: say, set up pointer to ${g_{11}}$ or $\text{gDD11}$
 
-        * `print components initializatoin: vlu using vlpush_index`
+        * `print components initializatoin: vlu using vlpush_index`: using independent varlist index
 
-        * `print components initializatoin: more input`
+        * `print components initializatoin: more input`: more grid functions in the rhs of the equations (other than evolution variables), say, set up pointer to $\partial_2g_{11}$ or $\text{dgDDD211}$
 
     * `print components equation*`
 
-        * `print components equation: temporary`
+        * `print components equation: temporary`: say, $g^{11} = ...$ 
 
-        * `print components equation: primary`
+        * `print components equation: primary`: say, $\dot{g}_{11} = ...$
 
-        * `print components equation: primary with suffix`
+        * `print components equation: primary with suffix`: say, $\dot{\Pi}_{\mathbf{nn}}^{\text{fromdtK}}=...$, where `suffix` is $\text{fromdtK}$. Needed if the equation has `if` statement 
 
-        * `print components equation: adding to primary`
-
-        * `print components equation: primary for flux`
+        * `print components equation: adding to primary`: say, $\dot{\Pi}_{11} =  \dot{\Pi}_{11} + ...$ , or $\text{dtPiDD11 += ...}$, adding contribution from matter part
 
 ## Tricks
 
@@ -102,3 +100,4 @@ Opening ".wl" files with Mathematica is recommended. Because you can benefit fro
     * all single letter symbol names or not (no)
 
     * checkout https://mathematica.stackexchange.com/questions/72669/mathematica-style-guide
+p
