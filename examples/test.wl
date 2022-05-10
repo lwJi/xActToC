@@ -109,7 +109,7 @@ $bodyPart[] := Module[{},
   Print[" Printing components initialization ..."];
   ManipulateVarlist["print components initialization: vlr", dtEvolVarlist];
   ManipulateVarlist["print components initialization: vlu", EvolVarlist];
-  ManipulateVarlist["print components initialization: more input", MoreInputVarlist];
+  ManipulateVarlist["print components initialization: more input/output", MoreInputVarlist];
   ManipulateVarlist["print components equation: temporary", TempVarlist];
   pr[];
   (* print equations *)

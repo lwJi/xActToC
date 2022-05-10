@@ -30,11 +30,11 @@ PrintComponentInitialization[mode_, varName_, compName_, gridPointIndex_] := Mod
     buf="double *"<>StringTrim[ToString[compToValue],gridPointIndex]<>" = Vard(node, Vind(vlr,"<>ToString[$projectName]<>"->i_"
       <>StringTrim[ToString[varName[[0]]],("dt"|$suffix$Unprotected)]<>getInitialComp[varName]<>If[varlistIndex==0,"","+"<>ToString[varlistIndex]]<>"));",
     (* print input var initialization using varlist index*)
-    StringMatchQ[mode,"print components initialization: vlu using vlpush_index*"],
+    StringMatchQ[mode,"print components initialization: vlu using vlpush_index"],
     buf="double *"<>StringTrim[ToString[compToValue],gridPointIndex]<>" = Vard(node, Vind(vlu,"<>ToString[$projectName]<>"->i_"
       <>StringTrim[ToString[varName[[0]]],$suffix$Unprotected]<>getInitialComp[varName]<>If[varlistIndex==0,"","+"<>ToString[varlistIndex]]<>"));",
     (* print more input var initialization *)
-    StringMatchQ[mode,"print components initialization: more input"],
+    StringMatchQ[mode,"print components initialization: more input/output"],
     buf="double *"<>StringTrim[ToString[compToValue],gridPointIndex]<>" = Vard(node, i"<>ToString[varName[[0]]]<>getInitialComp[varName]
       <>If[varlistIndex==0,"","+"<>ToString[varlistIndex]]<>");",
     (* mode undefined *)
@@ -54,6 +54,30 @@ getInitialComp[varName_] := Module[
     If[is3DAbstractIndex[varName[[compIndex]]], initialComp = initialComp<>"x", initialComp = initialComp<>"t"],
   {compIndex,1,Length[varName]}];
   initialComp
+];
+
+(* get inverses of metric and its determinant *)
+Options[SetRHSOfInvMetricAndDet] := {
+  coordinate -> $defaultCoordinateName,
+  dimension -> 3
+};
+SetRHSOfInvMetricAndDet[g_, invdetg_, invg_, OptionsPattern[]] := Module[
+  {
+    coordinateValue = OptionValue[coordinate],
+    dimensionValue = OptionValue[dimension],
+    iMin,
+    iMax = 3,
+    Mat,
+    invMat
+  },
+  If[dimensionValue==3, iMin = 1, iMin = 0];
+  Mat = Table[(g[{aa,-coordinateValue},{bb,-coordinateValue}]//ToValues), {aa,iMin,iMax},{bb,iMin,iMax}],
+  invMat=(Inverse[Mat]/.{1/Det[Mat]->(invdetg[]//ToValues)});
+  DefTensor[RHSOf[invdetg][], $Manifd];
+  DefTenosr[RHSOf[invg][i,j], $Manifd, Symmetric[{i,j}]];
+  ComponentValue[RHSOf[invdetg][], (1/Det[Mat]//Simplify)];
+  Do[ComponentValue[RHSOf[invg][{aa,coordinateValue},{bb,coordinateValue}], invMat[[aa,bb]]//Simplify], {aa,iMin,iMax},{bb,aa,iMax}];
+  invg[i,j]//ToBasis[coordinateValue]//ComponentArray//ComponentValue;
 ];
 
 
