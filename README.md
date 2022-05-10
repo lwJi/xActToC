@@ -1,6 +1,6 @@
 # Generate C files with 'xActToC'
 
-* Install Mathematica (versions which support 'wolframscript') . Download xAct from http://www.xact.es and install it properly.
+* Install free Wolfram Engine for Devolopers from https://www.wolfram.com/developer/. (If you are rich, you can install totally worth it Mathhematia instead, versions which support 'wolframscript'). Download xAct from http://www.xact.es and install it properly.
 
 * Prepare ".wl" files for your own project in the corresponding directory (please check out those ''.wl" files in the examples).
 
