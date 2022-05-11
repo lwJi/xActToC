@@ -88,6 +88,10 @@ isUp4DCompIndexListIn3DTensor[compIndexList_,varName_] := Module[
   isup4DCompIndexList
 ];
 
+(* check if the index list is on the right place *)
+indexType[compIndexList_?ListQ,indexType_] := indexType[compIndexList[[2]]];
+indexType3D[compIndexList_?ListQ,indexType_] := indexType[compIndexList[[2]]]&&(compIndexList[[1]]>0);
+
 (* get inverses of metric and its determinant *)
 Options[SetRHSOfInvMetricAndDet] := {
   coordinate -> $defaultCoordinateName,
