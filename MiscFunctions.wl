@@ -88,3 +88,27 @@ isUp4DCompIndexListIn3DTensor[compIndexList_,varName_] := Module[
   isup4DCompIndexList
 ];
 
+(* get inverses of metric and its determinant *)
+Options[SetRHSOfInvMetricAndDet] := {
+  coordinate -> $defaultCoordinateName,
+  dimension -> 3
+};
+SetRHSOfInvMetricAndDet[g_, invdetg_, invg_, OptionsPattern[]] := Module[
+  {
+    coordinateValue = OptionValue[coordinate],
+    dimensionValue = OptionValue[dimension],
+    iMin,
+    iMax = 3,
+    Mat,
+    invMat
+  },
+  If[dimensionValue==3, iMin = 1, iMin = 0];
+  Mat = Table[(g[{aa,-coordinateValue},{bb,-coordinateValue}]//ToValues), {aa,iMin,iMax},{bb,iMin,iMax}];
+  invMat=(Inverse[Mat]/.{1/Det[Mat]->(invdetg[]//ToValues)});
+  DefTensor[RHSOf[invdetg][], $Manifd];
+  DefTensor[RHSOf[invg][i,j], $Manifd, Symmetric[{i,j}]];
+  ComponentValue[RHSOf[invdetg][], (1/Det[Mat]//Simplify)];
+  Do[ComponentValue[RHSOf[invg][{aa,coordinateValue},{bb,coordinateValue}], invMat[[aa,bb]]//Simplify], {aa,iMin,iMax},{bb,aa,iMax}];
+  RHSOf[invg][i,j]//ToBasis[coordinateValue]//ComponentArray//ComponentValue;
+];
+
