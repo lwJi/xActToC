@@ -8,8 +8,7 @@
 Options[ManipulateVarlist] := {
   coordinate -> $defaultCoordinateName,
   gridPointIndex -> $gridPointIndex,
-  suffixName -> $suffixName,
-  printVerbose -> $bool$PrintVerbose
+  suffixName -> $suffixName
 };
 (* main function which handle different num of index cases *)
 ManipulateVarlist[mode_?StringQ, varlist_?ListQ, OptionsPattern[]] := Module[
@@ -31,7 +30,6 @@ ManipulateVarlist[mode_?StringQ, varlist_?ListQ, OptionsPattern[]] := Module[
   If[coordinateValue==Null, Message[ManipulateVarlist::ErrorNullCoordinate];Abort[]];
   (* set global parameters *)
   $bool$NewVarlist = True;
-  $bool$PrintVerbose = OptionValue[printVerbose];
   (* set temp parameters *)
   If[$dim==3, iMin = 1, iMin = 0];
 
@@ -289,8 +287,9 @@ PrintComponent::ErrorMode = "Print mode `1` unsupported yet !";
 PrintComponentEquation[mode_, coordinate_, compName_, rhssName_, suffixName_] := Module[
   {
     compToValue = compName//ToValues,
-    rhssToValue = rhssName//DummyToBasis[coordinate]//TraceBasisDummy//ToValues//Simplify
+    rhssToValue = rhssName//DummyToBasis[coordinate]//TraceBasisDummy//ToValues
   },
+  If[$bool$SimplifyEquation, rhssToValue=rhssToValue//Simplify];
   (* different modes *)
   Which[
     (* equations of temprary variables definition *)
@@ -309,7 +308,8 @@ PrintComponentEquation[mode_, coordinate_, compName_, rhssName_, suffixName_] :=
     (* equations of primary output variables with suffix, say "dtPinn$fromdtK", where suffixName='fromdtK' *)
     StringMatchQ[mode,"print components equation: primary with suffix"],
     Module[{},
-      rhssToValue = (rhssName/.{rhssName[[0]]->ToExpression[ToString[rhssName[[0]]]<>"$"<>suffixName]})//DummyToBasis[coordinate]//TraceBasisDummy//ToValues//Simplify;
+      rhssToValue = (rhssName/.{rhssName[[0]]->ToExpression[ToString[rhssName[[0]]]<>"$"<>suffixName]})//DummyToBasis[coordinate]//TraceBasisDummy//ToValues;
+      If[$bool$SimplifyEquation, rhssToValue=rhssToValue//Simplify];
       PutAppend[CForm[compToValue],$outputFile]; pr["="];
       PutAppend[CForm[rhssToValue],$outputFile]; pr[";\n"];
     ],

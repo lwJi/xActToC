@@ -47,9 +47,11 @@ $defaultCoordinateName = Null;
 $map$ComponentToVarlist = {};
 (* suffix to be added to vars, which would conflict with system default vars otherwise *)
 $suffix$Unprotected = "$Upt";
-(* flag if creat new varlist and if print verbose information, which are updated in ManipulateVarlist *)
+(* flag if creat new varlist, which are updated in ManipulateVarlist *)
 $bool$NewVarlist = True;
+(* more bool parameters *)
 $bool$PrintVerbose = False;
+$bool$SimplifyEquation = True;
 (* suffix name, for if statement in the equations, which should be update by user through ManipulateVarlist *)
 $suffixName = "";
 (* grid point index name, which should also be update by user directory or through ManipulateVarlist *)
