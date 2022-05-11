@@ -331,5 +331,5 @@ PrintComponentEquation[mode_, coordinate_, compName_, rhssName_, suffixName_] :=
     Message[PrintComponentEquation::ErrorMode, mode]; Abort[]
   ];
 ];
-PrintComponentEquation::ErrorMode = "Print equation mode `1` unsupported yet !";
-PrintComponentEquation::ErrorUndefined = "Rhs expression `1` undefined !";
+PrintComponentEquation::ErrorMode = "Print equation mode '`1`' unsupported yet !";
+PrintComponentEquation::ErrorUndefined = "Rhs expression '`1`' undefined !";
