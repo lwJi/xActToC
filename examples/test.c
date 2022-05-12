@@ -1,5 +1,5 @@
 /* test.c */
-/* (c) Liwei Ji 05/08/2022 */
+/* (c) Liwei Ji 05/11/2022 */
 /* Produced with Mathematica */
 
 #include "nmesh.h"
@@ -45,20 +45,17 @@ double *MDD13 = Vard(node, iMDDxx+2);
 double *MDD22 = Vard(node, iMDDxx+3);
 double *MDD23 = Vard(node, iMDDxx+4);
 double *MDD33 = Vard(node, iMDDxx+5);
-double
-vU1
+double vU1
 =
 MDD11[ijk]*uU1[ijk] + MDD12[ijk]*uU2[ijk] + MDD13[ijk]*uU3[ijk]
 ;
 
-double
-vU2
+double vU2
 =
 MDD12[ijk]*uU1[ijk] + MDD22[ijk]*uU2[ijk] + MDD23[ijk]*uU3[ijk]
 ;
 
-double
-vU3
+double vU3
 =
 MDD13[ijk]*uU1[ijk] + MDD23[ijk]*uU2[ijk] + MDD33[ijk]*uU3[ijk]
 ;
