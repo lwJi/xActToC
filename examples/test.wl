@@ -59,10 +59,10 @@ IndexSet[RHSOf[rU,"otherwise"][i_], vU[i]];
 Print[];
 Print[" Setting components ..."];
 Print[];
-SetComponent["independent varlist", dtEvolVarlist];
-SetComponent["independent varlist", EvolVarlist];
-SetComponent["independent varlist", MoreInputVarlist];
-SetComponent["temporary varlist", TempVarlist];
+SetComponents["independent varlist", dtEvolVarlist];
+SetComponents["independent varlist", EvolVarlist];
+SetComponents["independent varlist", MoreInputVarlist];
+SetComponents["temporary varlist", TempVarlist];
 
 (* ============== *)
 (* Write to files *)
@@ -107,21 +107,21 @@ $headPart[] := Module[{},
 $bodyPart[] := Module[{},
   (* print initializations *)
   Print[" Printing components initialization ..."];
-  PrintInitialization["vlr", dtEvolVarlist];
-  PrintInitialization["vlu", EvolVarlist];
-  PrintInitialization["more input/output", MoreInputVarlist];
-  PrintEquation["temporary", TempVarlist];
+  PrintInitializations["vlr", dtEvolVarlist];
+  PrintInitializations["vlu", EvolVarlist];
+  PrintInitializations["more input/output", MoreInputVarlist];
+  PrintEquations["temporary", TempVarlist];
   pr[];
   (* print equations *)
   Print[" Printing components equation ...\n"];
   pr["if(Msqr)"];
   pr["{"];
-  PrintEquation["primary with suffix", dtEvolVarlist, {coordinate->cartesian, gridPointIndex->"[[ijk]]", suffixName->"Msqr"}];
+  PrintEquations["primary with suffix", dtEvolVarlist, {coordinate->cartesian, gridPointIndex->"[[ijk]]", suffixName->"Msqr"}];
   (*PrintEquation["primary with suffix", dtEvolVarlist, suffixName->"Msqr"];*)
   pr["}"];
   pr["else"];
   pr["{"];
-  PrintEquation["primary with suffix", dtEvolVarlist, suffixName->"otherwise"];
+  PrintEquations["primary with suffix", dtEvolVarlist, suffixName->"otherwise"];
   pr["}"];
   pr[];
 ];

@@ -5,12 +5,12 @@
 *)
 
 (* set components *)
-Options[SetComponent] := {
+Options[SetComponents] := {
   coordinate -> $defaultCoordinateName,
   gridPointIndex -> $gridPointIndex,
   suffixName -> $suffixName
 };
-SetComponent[mode_?StringQ, varlist_?ListQ, OptionsPattern[]] := Module[
+SetComponents[mode_?StringQ, varlist_?ListQ, OptionsPattern[]] := Module[
   {
     coordinateValue = OptionValue[coordinate],
     gridPointIndexValue = OptionValue[gridPointIndex],
@@ -21,12 +21,12 @@ SetComponent[mode_?StringQ, varlist_?ListQ, OptionsPattern[]] := Module[
 ];
 
 (* print initializations *)
-Options[PrintInitialization] := {
+Options[PrintInitializations] := {
   coordinate -> $defaultCoordinateName,
   gridPointIndex -> $gridPointIndex,
   suffixName -> $suffixName
 };
-PrintInitialization[mode_?StringQ, varlist_?ListQ, OptionsPattern[]] := Module[
+PrintInitializations[mode_?StringQ, varlist_?ListQ, OptionsPattern[]] := Module[
   {
     coordinateValue = OptionValue[coordinate],
     gridPointIndexValue = OptionValue[gridPointIndex],
@@ -37,12 +37,12 @@ PrintInitialization[mode_?StringQ, varlist_?ListQ, OptionsPattern[]] := Module[
 ];
 
 (* print equations *)
-Options[PrintEquation] := {
+Options[PrintEquations] := {
   coordinate -> $defaultCoordinateName,
   gridPointIndex -> $gridPointIndex,
   suffixName -> $suffixName
 };
-PrintEquation[mode_?StringQ, varlist_?ListQ, OptionsPattern[]] := Module[
+PrintEquations[mode_?StringQ, varlist_?ListQ, OptionsPattern[]] := Module[
   {
     coordinateValue = OptionValue[coordinate],
     gridPointIndexValue = OptionValue[gridPointIndex],
