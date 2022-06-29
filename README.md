@@ -4,26 +4,20 @@
 
 * Prepare ".wl" files for your own project in the corresponding directory (please check out those ''.wl" files in the examples).
 
-* Run with
+* Run the following command to generate the corresponing C files.
 
-```shell
+```bash
 xActToC/GenerateC.sh *.wl
 ```
-to generate the corresponing C files.
 
 * Or you can also generate C files one by one using command
 
-```shell
+```bash
 wolframscript -f file.wl
-```
 
-then run
-
-```shell
+# then remove the trailing spaces in all these files
 xActToC/RemoveTrailingSpaces.sh *.c
 ```
-
-to remove the trailing spaces in all these files.
 
 ## Prepare `.wl` files for your own codes
 
@@ -31,40 +25,39 @@ to remove the trailing spaces in all these files.
 
 1. Add a module specific to your **codes** into directory `Codes`. (Please see `Codes\Nmesh.wl` as an example.)
 
-
 2. Add a `.wl` file specific to your **projects** consistent with the above module (please see `example/test.wl` as an example):
 
-### Options for `mode` in function `ManipulateVarlist[mode, varlist]`
+### Options for `mode`
 
-* `"set components*"`: set components for each tensor which are grid point functions (say <img src="https://render.githubusercontent.com/render/math?math=g_{11}">=`gDD11[ijk]`)
+* Set components for each tensor (`SetComponents[mode, ...]`)
 
-    * `set components: for temporary varlist`: set components for each temporary tensor (say <img src="https://render.githubusercontent.com/render/math?math=g^{11}">=`gUU11`)
+    * `mode = "temporary"`: set components for each temporary tensor (say $g^{11}$=`gUU11`)
 
-    * `set components: independent varlist index`: varlist index start from 0 for each tensor
+    * `mode = "independent"`: set components for each grid functions (say $g_{11}$=`gDD11[ijk]`); varlist index start from 0 for each tensor
 
-* `print components*`: print to C-file
+* Print to C-file
 
-    * `print components initialization*`: set up pointers to each component (say <img src="https://render.githubusercontent.com/render/math?math=g_{11}"> or `gDD11`) of tensors in the memory. It should be defined by user in the module under directory `Codes`, here we use `Nmesh` as an example
+    * `PrintInitializations[mode, ...]`: set up pointers to each component (say $g_{11}$ or `gDD11`) of tensors in the memory, it should be defined by user in the module under directory `Codes`, here we use `Nmesh` as an example
 
-        * `print components initializatoin: vlr`: say, set up pointer to <img src="https://render.githubusercontent.com/render/math?math=\dot{g_{11}}"> or `dtgDD11`
+        * `mode = "vlr"`: say, set up pointer to $\dot{g}_{11}$ or `dtgDD11`
 
-        * `print components initializatoin: vlr using vlpush_index`: using independent varlist index
+        * `mode = "vlr independent"`: using independent varlist index
 
-        * `print components initializatoin: vlu`: say, set up pointer to <img src="https://render.githubusercontent.com/render/math?math=g_{11}"> or `gDD11`
+        * `mode = "vlu"`: say, set up pointer to $g_{11}$ or `gDD11`
 
-        * `print components initializatoin: vlu using vlpush_index`: using independent varlist index
+        * `mode = "vlu independent"`: using independent varlist index
 
-        * `print components initializatoin: more input`: more grid functions in the rhs of the equations (other than evolution variables), say, set up pointer to <img src="https://render.githubusercontent.com/render/math?math=\partial_2g_{11}"> or `dgDDD211`
+        * `mode = "more input/output"`: more grid functions in the rhs of the equations (other than evolution variables), say, set up pointer to $\partial_2g_{11}$ or `dgDDD211`
 
-    * `print components equation*`
+    * `PrintEquations[mode, ...]`
 
-        * `print components equation: temporary`: say, <img src="https://render.githubusercontent.com/render/math?math=g_{11}">=... 
+        * `mode = "temporary"`: say, $g_{11}$=... 
 
-        * `print components equation: primary`: say, <img src="https://render.githubusercontent.com/render/math?math=\dot{g}_{11}">=...
+        * `mode = "primary"`: say, $\dot{g}_{11}$=...
 
-        * `print components equation: primary with suffix`: say, <img src="https://render.githubusercontent.com/render/math?math=\dot{\Pi}_{\mathbf{nn}}^{\text{fromdtK}}">, where `suffix` is `fromdtK`. It is needed if the equation has `if` statement 
+        * `mode = "primary with suffix"`: say, $\dot{\Pi}_{\mathbf{nn}}^{\text{fromdtK}}$, where `suffix` is `fromdtK`. It is needed if the equation has `if` statement 
 
-        * `print components equation: adding to primary`: say, <img src="https://render.githubusercontent.com/render/math?math=\dot{\Pi}_{11}=\dot{\Pi}_{11}..."> , or `dtPiDD11 += ...`, adding contribution from matter part
+        * `mode = "adding to primary"`: say, $\dot{\Pi}_{11}=\dot{\Pi}_{11}+...$ , or `dtPiDD11 += ...`, adding contribution from matter part
 
 ## Tricks
 
@@ -81,6 +74,7 @@ Opening ".wl" files with Mathematica is recommended. Because you can benefit fro
 | Unprotected | Upt          |
 
 
+<!---
 ## Name Conventions
 
 * lower CamelCase
@@ -101,3 +95,4 @@ Opening ".wl" files with Mathematica is recommended. Because you can benefit fro
 
     * checkout https://mathematica.stackexchange.com/questions/72669/mathematica-style-guide
 p
+--->
