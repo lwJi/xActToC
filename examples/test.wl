@@ -59,9 +59,9 @@ IndexSet[RHSOf[rU,"otherwise"][i_], vU[i]];
 Print[];
 Print[" Setting components ..."];
 Print[];
-ManipulateVarlist["set components: independent varlist index", dtEvolVarlist];
-ManipulateVarlist["set components: independent varlist index", EvolVarlist];
-ManipulateVarlist["set components: independent varlist index", MoreInputVarlist];
+ManipulateVarlist["set components: independent varlist", dtEvolVarlist];
+ManipulateVarlist["set components: independent varlist", EvolVarlist];
+ManipulateVarlist["set components: independent varlist", MoreInputVarlist];
 ManipulateVarlist["set components: temporary varlist", TempVarlist];
 
 (* ============== *)
