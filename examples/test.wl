@@ -62,7 +62,7 @@ Print[];
 ManipulateVarlist["set components: independent varlist index", dtEvolVarlist];
 ManipulateVarlist["set components: independent varlist index", EvolVarlist];
 ManipulateVarlist["set components: independent varlist index", MoreInputVarlist];
-ManipulateVarlist["set components: for temporary varlist", TempVarlist];
+ManipulateVarlist["set components: temporary varlist", TempVarlist];
 
 (* ============== *)
 (* Write to files *)

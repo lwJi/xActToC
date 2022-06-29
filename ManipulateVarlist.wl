@@ -60,9 +60,11 @@ ManipulateVarlist[mode_?StringQ, varlist_?ListQ, OptionsPattern[]] := Module[
       (* ZERO INDEX CASE: *)
       0,
       manipulateComponentValue[{}],
+
       (* ONE INDEX CASE: *)
       1,
       Do[manipulateComponentValue[{ia}], {ia,iMin,iMax}],
+
       (* TWO INDEXES CASE: *)
       2,
       If[varWithSymmetry,
@@ -79,6 +81,7 @@ ManipulateVarlist[mode_?StringQ, varlist_?ListQ, OptionsPattern[]] := Module[
         (* Without Symmetry *)
         Do[manipulateComponentValue[{ia,ib}], {ia,iMin,iMax},{ib,iMin,iMax}]
       ],
+
       (* THREE INDEXES CASE *)
       3,
       If[varWithSymmetry,
@@ -112,6 +115,7 @@ ManipulateVarlist[mode_?StringQ, varlist_?ListQ, OptionsPattern[]] := Module[
         (* Without Symmetry *)
         Do[manipulateComponentValue[{ic,ia,ib}], {ic,iMin,iMax},{ia,iMin,iMax},{ib,iMin,iMax}]
       ],
+
       (* FOUR INDEXES CASE *)
       4,
       If[varWithSymmetry,
@@ -143,6 +147,7 @@ ManipulateVarlist[mode_?StringQ, varlist_?ListQ, OptionsPattern[]] := Module[
         (* Without Symmetry *)
         Do[manipulateComponentValue[{ic,id,ia,ib}], {ic,iMin,iMax},{id,iMin,iMax},{ia,iMin,iMax},{ib,iMin,iMax}]
       ],
+
       (* OTHER NUM OF INDEXES *)
       _,
       Message[ManipulateVarlist::ErrorTensorType, iVar, varName, varlist]; Abort[]
@@ -167,6 +172,7 @@ ManipulateComponent[compIndexList_, mode_, coordinate_, varName_, gridPointIndex
   },
   (* set names *)
   {compName,rhssName,exprName} = SetNameArray[compIndexList, mode, coordinate, varName, gridPointIndex];
+
   (* skip those 4D component (0-compopnent here) of a 3D tensor *)
   If[is4DCompIndexListIn3DTensor[compIndexList,varName],
     (* set those 'up' 0-component to 0 for a 3D tensor *)
@@ -174,6 +180,7 @@ ManipulateComponent[compIndexList_, mode_, coordinate_, varName_, gridPointIndex
     (* skip *)
     Continue[]
   ];
+
   (* set components or print components/equations *)
   Which[
     (* set components *)
@@ -201,6 +208,7 @@ SetNameArray[compIndexList_, mode_, coordinate_, varName_, gridPointIndex_] := M
   compName = varName[[0]][];
   rhssName = RHSOf[varName[[0]]][];
   exprName = StringTrim[ToString[varName[[0]]], $suffix$Unprotected];
+
   (* if not scalar *)
   If[Length[compIndexList]>0,
     Do[
@@ -211,10 +219,13 @@ SetNameArray[compIndexList_, mode_, coordinate_, varName_, gridPointIndex_] := M
       exprName = exprName<>ToString@compIndexList[[compIndex]],
     {compIndex, 1, Length[compIndexList]}]
   ];
-  If[StringMatchQ[mode, "set components: for temporary varlist"],
+
+  (* if set component for temporary varlist or not *)
+  If[StringMatchQ[mode, "set components: temporary varlist"],
     exprName=ToExpression[exprName],
     exprName=ToExpression[exprName<>gridPointIndex]
   ];
+
   (* return NameArray *)
   {compName, rhssName, exprName}
 ];
@@ -260,6 +271,7 @@ SetComponentAndIndexMap[mode_, compName_, exprName_] := Module[
     varlistIndex = Last[$map$ComponentToVarlist][[2]]
   ];
   varlistIndex = varlistIndex+1;
+
   (* set components and add to global map *)
   ComponentValue[compName, exprName];
   If[MemberQ[$map$ComponentToVarlist[[All, 1]], compName], (* if tensor component is already exist *)
@@ -290,6 +302,7 @@ PrintComponentEquation[mode_, coordinate_, compName_, rhssName_, suffixName_] :=
     rhssToValue = rhssName//DummyToBasis[coordinate]//TraceBasisDummy//ToValues
   },
   If[$bool$SimplifyEquation, rhssToValue=rhssToValue//Simplify];
+
   (* different modes *)
   Which[
     (* equations of temprary variables definition *)
