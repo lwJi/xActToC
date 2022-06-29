@@ -154,7 +154,7 @@ ManipulateVarlist[mode_?StringQ, varlist_?ListQ, OptionsPattern[]] := Module[
     ], (* end of Switch*)
   {iVar, 1, Length[varlist]}]; (* end of Do *)
 ];
-ManipulateVarlist::ErrorTensorNonExist = "Tensor of the `1`-th var, `2`, in varlist `3` can't be defined since it's in 'print components' mode. Please set its components first !";
+ManipulateVarlist::ErrorTensorNonExist = "Tensor of the `1`-th var, `2`, in varlist `3` can't be defined since it's not in 'set components' mode. Please set its components first !";
 ManipulateVarlist::ErrorTensorExistOutside = "Tensor of the `1`-th var, `2`, in varlist `3` already exsit outside the global varlist !";
 ManipulateVarlist::ErrorTensorType = "Tensor type of the `1`-th var, `2`, in varlist `3` unsupported yet !";
 ManipulateVarlist::ErrorSymmetryType = "Symmetry type of the `1`-th var, `2`, in varlist `3` unsupported yet !";

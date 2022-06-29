@@ -59,10 +59,10 @@ IndexSet[RHSOf[rU,"otherwise"][i_], vU[i]];
 Print[];
 Print[" Setting components ..."];
 Print[];
-ManipulateVarlist["set components: independent varlist", dtEvolVarlist];
-ManipulateVarlist["set components: independent varlist", EvolVarlist];
-ManipulateVarlist["set components: independent varlist", MoreInputVarlist];
-ManipulateVarlist["set components: temporary varlist", TempVarlist];
+SetComponent["independent varlist", dtEvolVarlist];
+SetComponent["independent varlist", EvolVarlist];
+SetComponent["independent varlist", MoreInputVarlist];
+SetComponent["temporary varlist", TempVarlist];
 
 (* ============== *)
 (* Write to files *)
@@ -107,21 +107,21 @@ $headPart[] := Module[{},
 $bodyPart[] := Module[{},
   (* print initializations *)
   Print[" Printing components initialization ..."];
-  ManipulateVarlist["print components initialization: vlr", dtEvolVarlist];
-  ManipulateVarlist["print components initialization: vlu", EvolVarlist];
-  ManipulateVarlist["print components initialization: more input/output", MoreInputVarlist];
-  ManipulateVarlist["print components equation: temporary", TempVarlist];
+  PrintInitialization["vlr", dtEvolVarlist];
+  PrintInitialization["vlu", EvolVarlist];
+  PrintInitialization["more input/output", MoreInputVarlist];
+  PrintEquation["temporary", TempVarlist];
   pr[];
   (* print equations *)
   Print[" Printing components equation ...\n"];
   pr["if(Msqr)"];
   pr["{"];
-  ManipulateVarlist["print components equation: primary with suffix", dtEvolVarlist, {coordinate->cartesian, gridPointIndex->"[[ijk]]", suffixName->"Msqr"}];
-  (*ManipulateVarlist["print components equation: primary with suffix", dtEvolVarlist, suffixName->"Msqr"];*)
+  PrintEquation["primary with suffix", dtEvolVarlist, {coordinate->cartesian, gridPointIndex->"[[ijk]]", suffixName->"Msqr"}];
+  (*PrintEquation["primary with suffix", dtEvolVarlist, suffixName->"Msqr"];*)
   pr["}"];
   pr["else"];
   pr["{"];
-  ManipulateVarlist["print components equation: primary with suffix", dtEvolVarlist, suffixName->"otherwise"];
+  PrintEquation["primary with suffix", dtEvolVarlist, suffixName->"otherwise"];
   pr["}"];
   pr[];
 ];
