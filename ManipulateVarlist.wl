@@ -221,7 +221,7 @@ SetNameArray[compIndexList_, mode_, coordinate_, varName_, gridPointIndex_] := M
   ];
 
   (* if set component for temporary varlist or not *)
-  If[StringMatchQ[mode, "set components: temporary varlist"],
+  If[StringMatchQ[mode, "set components: temporary"],
     exprName=ToExpression[exprName],
     exprName=ToExpression[exprName<>gridPointIndex]
   ];
@@ -266,7 +266,7 @@ SetComponentAndIndexMap[mode_, compName_, exprName_] := Module[
   *)
   If[Length[$map$ComponentToVarlist]==0 || (* global varlist is empty *)
      $bool$NewVarlist ||                   (* new local varlist start *)
-     (StringMatchQ[mode, "set components: independent varlist"] && (compName[[0]]=!=Last[$map$ComponentToVarlist][[1,0]])), (* new var in local varlist *)
+     (StringMatchQ[mode, "set components: independent"] && (compName[[0]]=!=Last[$map$ComponentToVarlist][[1,0]])), (* new var in local varlist *)
     varlistIndex = -1,
     varlistIndex = Last[$map$ComponentToVarlist][[2]]
   ];

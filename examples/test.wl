@@ -59,10 +59,10 @@ IndexSet[RHSOf[rU,"otherwise"][i_], vU[i]];
 Print[];
 Print[" Setting components ..."];
 Print[];
-SetComponents["independent varlist", dtEvolVarlist];
-SetComponents["independent varlist", EvolVarlist];
-SetComponents["independent varlist", MoreInputVarlist];
-SetComponents["temporary varlist", TempVarlist];
+SetComponents["independent", dtEvolVarlist];
+SetComponents["independent", EvolVarlist];
+SetComponents["independent", MoreInputVarlist];
+SetComponents["temporary", TempVarlist];
 
 (* ============== *)
 (* Write to files *)
