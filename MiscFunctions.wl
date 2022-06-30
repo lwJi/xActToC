@@ -21,10 +21,17 @@ RHSOf[var__] := Module[
 ];
 RHSOf::ErrorArgument = "`1` arguments are not supported yet !";
 
-(* return dtvar based on var, if prefix='dt' *)
-PrefixOf[prefix_:$prefix$Dt, varlist_?ListQ] := Module[{},
+(* return dtvar based on var, if prefix="dt" *)
+PrefixOf[prefix_?StringQ, varlist_?ListQ] := Module[{},
   (* var -> prefixvar for all the var in the varlist *)
   varlist/.Table[varlist[[iVar,1]]->ToExpression[prefix<>ToString[varlist[[iVar,1]]]], {iVar,1,Length[varlist]}]
+];
+
+DtOf[prefix_:"dt", varlist_?ListQ] := Module[{},
+  (* set global var *)
+  $prefix$Dt = prefix;
+  (* add prefix for each var in the varlist *)
+  PrefixOf[prefix, varlist]
 ];
 
 (* print verbose, depend on value of $bool$PrintVerbose *)
