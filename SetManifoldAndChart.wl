@@ -8,12 +8,13 @@
 (* set mainfold and chart:
     if need non-default value for coordinateArray/tensorIndexRange, please try SetManifoldAndChart[dimension_, coordinateName_, {coordinateArray->..., tensorIndexRange->...}];
     defaut index conventions: in the 4D case, we use
-      a,b,c,...,h,h1,h2,...,h9 as abstract index for 4D tensor,
-      i,j,k,...,z,z1,z2,...,z9 as abstract index for 3D tensor.
+      a,b,c,...,h,h1,h2,...,h9 as abstract index for 4D tensor;
+      i,j,k,...,z,z1,z2,...,z9 as abstract index for 3D tensor;
+      (and we skip 'g' and save it for metric var.)
 *)
 Options[SetManifoldAndChart] := {
   coordinateArray -> {},
-  tensorIndexRange -> Union[IndexRange[a,z], Table[ToExpression["h"<>ToString[i]], {i,1,9}], Table[ToExpression["z"<>ToString[i]], {i,1,9}]]
+  tensorIndexRange -> Union[Complement[IndexRange[a,z], {g}], Table[ToExpression["h"<>ToString[i]], {i,1,9}], Table[ToExpression["z"<>ToString[i]], {i,1,9}]]
 };
 SetManifoldAndChart[dimension_, coordinateName_, gridPointIndex_, OptionsPattern[]] := Module[
   {
