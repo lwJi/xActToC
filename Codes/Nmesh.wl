@@ -43,8 +43,8 @@ PrintComponentInitialization[mode_, varName_, compName_, gridPointIndex_] := Mod
     (* print more input var initialization *)
     StringMatchQ[mode, "print components initialization: more input/output"],
     buf="double *"<>StringTrim[ToString[compToValue], gridPointIndex]<>" = Vard(node, i"
-      <>ToString[varName[[0]]]<>getInitialComp[varName]
-      <>If[varlistIndex==0, "", "+"<>ToString[varlistIndex]]<>");",
+      <>StringTrim[ToString[varName[[0]]], $suffix$Unprotected]
+      <>getInitialComp[varName]<>If[varlistIndex==0, "", "+"<>ToString[varlistIndex]]<>");",
 
     (* mode undefined *)
     True,
