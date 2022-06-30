@@ -17,6 +17,7 @@ SetComponents[mode_?StringQ, varlist_?ListQ, OptionsPattern[]] := Module[
     suffixNameValue = OptionValue[suffixName],
     fullString = "set components: "<>mode
   },
+
   ManipulateVarlist[fullString, varlist, {coordinate->coordinateValue, gridPointIndex->gridPointIndexValue, suffixName->suffixNameValue}];
 ];
 
@@ -33,6 +34,7 @@ PrintInitializations[mode_?StringQ, varlist_?ListQ, OptionsPattern[]] := Module[
     suffixNameValue = OptionValue[suffixName],
     fullString = "print components initialization: "<>mode
   },
+
   ManipulateVarlist[fullString, varlist, {coordinate->coordinateValue, gridPointIndex->gridPointIndexValue, suffixName->suffixNameValue}];
 ];
 
@@ -49,5 +51,6 @@ PrintEquations[mode_?StringQ, varlist_?ListQ, OptionsPattern[]] := Module[
     suffixNameValue = OptionValue[suffixName],
     fullString = "print components equation: "<>mode
   },
+
   ManipulateVarlist[fullString, varlist, {coordinate->coordinateValue, gridPointIndex->gridPointIndexValue, suffixName->suffixNameValue}];
 ];
