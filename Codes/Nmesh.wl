@@ -17,26 +17,32 @@ PrintComponentInitialization[mode_, varName_, compName_, gridPointIndex_] := Mod
     compToValue = compName//ToValues,
     buf
   },
+
   (* different modes *)
   Which[
     (* print output var initialization *)
     StringMatchQ[mode,"print components initialization: vlr"],
     buf="double *"<>StringTrim[ToString[compToValue],gridPointIndex]<>" = Vard(node, Vind(vlr,"<>ToString[varlistIndex]<>"));",
+
     (* print input var initialization *)
     StringMatchQ[mode,"print components initialization: vlu"],
     buf="double *"<>StringTrim[ToString[compToValue],gridPointIndex]<>" = Vard(node, Vind(vlu,"<>ToString[varlistIndex]<>"));",
+
     (* print output var initialization using varlist index*)
     StringMatchQ[mode,"print components initialization: vlr independent"],
     buf="double *"<>StringTrim[ToString[compToValue],gridPointIndex]<>" = Vard(node, Vind(vlr,"<>ToString[$projectName]<>"->i_"
       <>StringTrim[ToString[varName[[0]]],("dt"|$suffix$Unprotected)]<>getInitialComp[varName]<>If[varlistIndex==0,"","+"<>ToString[varlistIndex]]<>"));",
+
     (* print input var initialization using varlist index*)
     StringMatchQ[mode,"print components initialization: vlu independent"],
     buf="double *"<>StringTrim[ToString[compToValue],gridPointIndex]<>" = Vard(node, Vind(vlu,"<>ToString[$projectName]<>"->i_"
       <>StringTrim[ToString[varName[[0]]],$suffix$Unprotected]<>getInitialComp[varName]<>If[varlistIndex==0,"","+"<>ToString[varlistIndex]]<>"));",
+
     (* print more input var initialization *)
     StringMatchQ[mode,"print components initialization: more input/output"],
     buf="double *"<>StringTrim[ToString[compToValue],gridPointIndex]<>" = Vard(node, i"<>ToString[varName[[0]]]<>getInitialComp[varName]
       <>If[varlistIndex==0,"","+"<>ToString[varlistIndex]]<>");",
+
     (* mode undefined *)
     True,
     Message[PrintComponentInitialization::ErrorMode, mode]; Abort[]
