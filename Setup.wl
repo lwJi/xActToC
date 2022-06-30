@@ -47,6 +47,8 @@ $defaultCoordinateName = Null;
 $map$ComponentToVarlist = {};
 (* suffix to be added to vars, which would conflict with system default vars otherwise *)
 $suffix$Unprotected = "$Upt";
+(* prefix to be added to evo vars to represent var dtevo *)
+$prefix$Dt = "dt";
 (* flag if creat new varlist, which are updated in ManipulateVarlist *)
 $bool$NewVarlist = True;
 (* more bool parameters *)

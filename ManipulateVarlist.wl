@@ -257,7 +257,7 @@ DefineTensor[var_] := Module[
 DefineTensor::ErrorTensorType = "Tensor type of `1` unsupported yet !";
 
 (* different modes of set components, also set global map of varlist:
-     1. mode 'set components: varlist': using order in varlist,
+     1. mode 'set components: using vl_index': using order in varlist,
      2. mode 'set components: independent': using order start with 0.
 *)
 SetComponentAndIndexMap[mode_, compName_, exprName_] := Module[
