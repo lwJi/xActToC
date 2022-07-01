@@ -8,7 +8,8 @@
 (*************)
 (* Load xAct *)
 (*************)
-<< xAct`xTras`
+<< xAct`xCoba`
+(* << xAct`xTras` *)
 
 (***********)
 (* Options *)
