@@ -16,7 +16,7 @@ Options[SetManifoldAndChart] := {
   coordinateArray -> {},
   tensorIndexRange -> Union[Complement[IndexRange[a,z], {g}], Table[ToExpression["h"<>ToString[i]], {i,1,9}], Table[ToExpression["z"<>ToString[i]], {i,1,9}]]
 };
-SetManifoldAndChart[dimension_, coordinateName_, gridPointIndex_, OptionsPattern[]] := Module[
+SetManifoldAndChart[dimension_?IntegerQ, coordinateName_, gridPointIndex_, OptionsPattern[]] := Module[
   {
     coordinateArrayValue = OptionValue[coordinateArray],
     tensorIndexRangeValue = OptionValue[tensorIndexRange]
