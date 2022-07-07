@@ -15,6 +15,7 @@ PrintComponentInitialization[mode_, varName_, compName_, gridPointIndex_] := Mod
   {
     varlistIndex = $map$ComponentToVarlist[[Position[$map$ComponentToVarlist, compName][[1,1]], 2]],
     compToValue = compName//ToValues,
+    strName,
     buf
   },
 
@@ -26,7 +27,8 @@ PrintComponentInitialization[mode_, varName_, compName_, gridPointIndex_] := Mod
 
     (* print input var initialization *)
     StringMatchQ[mode, "print components initialization: vl_evo using enum"],
-    buf="const double * const "<>StringTrim[ToString[compToValue], gridPointIndex]<>" = Vard(node, Vind(vlu,"<>ToString[varlistIndex]<>"));",
+    strName = StringTrim[ToString[compToValue], gridPointIndex];
+    buf="const double * const "<>strName<>" = &uZipVars[VAR::U_"<>ToUpperCase[strName]<>ToString[varlistIndex]<>"][offset];",
 
     (* print output var initialization using var indepedent index*)
     StringMatchQ[mode, "print components initialization: vl_lhs"],
