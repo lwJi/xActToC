@@ -15,6 +15,7 @@ $derivIndex = 0;
 
 (* cnd num -> letter *)
 cndNumToLetter = {"1"->"x","2"->"y","3"->"z"};
+cndLetterToNum = {"x"->"1","y"->"2","z"->"3"};
 
 (* print components initialization *)
 PrintComponentInitialization[mode_, varName_, compName_, gridPointIndex_] := Module[
@@ -48,8 +49,12 @@ PrintComponentInitialization[mode_, varName_, compName_, gridPointIndex_] := Mod
 
     StringMatchQ[mode, "print components initialization: vl_deriv_calc"],
     {strDerivIndices, strDerivBases} = getStrDerivNames[compName];
-    buf=StringReplace["deriv_"<>strDerivIndices<>"("<>strName<>", "<>strDerivBases<>", "
-      <>"h"<>StringTake[strDerivIndices,1]<>", sz, bflag);", "$"->"_"],
+    If[StringLength[strDerivIndices]==2 && StringTake[strDerivIndices,1]!=StringTake[strDerivIndices,-1],
+      buf=StringReplace["deriv_"<>StringTake[strDerivIndices,1]<>"("<>strName<>", "<>"d_"<>strDerivBases<>StringReplace[StringTake[strDerivIndices,-1],cndLetterToNum]<>", "
+        <>"h"<>StringTake[strDerivIndices,1]<>", sz, bflag);", "$"->"_"],
+      buf=StringReplace["deriv_"<>strDerivIndices<>"("<>strName<>", "<>strDerivBases<>", "
+        <>"h"<>StringTake[strDerivIndices,1]<>", sz, bflag);", "$"->"_"]
+    ],
 
     (* mode undefined *)
     True,
