@@ -15,18 +15,19 @@ PrintComponentInitialization[mode_, varName_, compName_, gridPointIndex_] := Mod
   {
     varlistIndex = $map$ComponentToVarlist[[Position[$map$ComponentToVarlist, compName][[1,1]], 2]],
     compToValue = compName//ToValues,
-    strName = StringTrim[ToString[compToValue], ( gridPointIndex | "SYM" | $suffix$Unprotected )],
     strNameBare = ToUpperCase[StringTrim[ToString[varName[[0]]], $suffix$Unprotected]],
+    strName,
     strIndex,
     buf
   },
+  strName = StringTrim[ToString[compToValue], ( gridPointIndex | "SYM" | $suffix$Unprotected )];
   strIndex = If[Length[varName]==0, "", ToString[varlistIndex]];
 
   (* different modes *)
   Which[
     (* print input var initialization *)
     StringMatchQ[mode, "print components initialization: vl_evo using enum"],
-    buf="const double *"<>strName<>" = &uZipVars[VAR::U_"<>strNameBare<>strIndex<>"][offset];",
+    buf="const double * const "<>strName<>" = &uZipVars[VAR::U_"<>strNameBare<>strIndex<>"][offset];",
 
     (* print more input/output var initialization *)
     StringMatchQ[mode, "print components initialization: more input/output"],
@@ -34,7 +35,7 @@ PrintComponentInitialization[mode_, varName_, compName_, gridPointIndex_] := Mod
 
     (* print more input/output var initialization *)
     StringMatchQ[mode, "print components initialization: vl_deriv"],
-    buf="deriv_ *"<>strName<>" = &uZipConVars[VAR_CONSTRAINT::C_"<>strNameBare<>strIndex<>"][offset];",
+    buf="double * "<>strName<>" = &uZipConVars[VAR_CONSTRAINT::C_"<>strNameBare<>strIndex<>"][offset];",
 
     (* mode undefined *)
     True,
